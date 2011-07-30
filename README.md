@@ -16,6 +16,7 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Examples
 First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
+
 ```javascript
 var jstoxml = require('jstoxml');
 ```
@@ -239,6 +240,152 @@ Output:
       <link>Item2 link</link>
       <description>Item2 Description</description>
       <pubDate>Sat Jul 30 2011 18:33:47 GMT+0900 (JST)</pubDate>
+    </item>
+  </channel>
+</rss>
+```
+
+
+#### Example 10: Podcast RSS Feed
+(see the [Apple docs](http://www.apple.com/itunes/podcasts/specs.html) for more information)
+
+```javascript
+jstoxml.toXML({
+  _name: 'rss',
+  _attrs: {
+    'xmlns:itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+    version: '2.0'
+  },
+  _content: {
+    channel: [
+      {title: 'Title'},
+      {link: 'google.com'},
+      {language: 'en-us'},
+      {copyright: 'Copyright 2011'},
+      {'itunes:subtitle': 'Subtitle'},
+      {'itunes:author': 'Author'},
+      {'itunes:summary': 'Summary'},
+      {description: 'Description'},
+      {'itunes:owner': {
+        'itunes:name': 'Name',
+        'itunes:email': 'Email'
+      }},
+      {
+        _name: 'itunes:image',
+        _attrs: {
+          href: 'image.jpg'
+        }
+      },
+      {
+        _name: 'itunes:category',
+        _attrs: {
+          text: 'Technology'
+        },
+        _content: {
+          _name: 'itunes:category',
+          _attrs: {
+            text: 'Gadgets'
+          } 
+        }
+      },
+      {
+        _name: 'itunes:category',
+        _attrs: {
+          text: 'TV &amp; Film'
+        }
+      },
+      {
+        item: [
+          {title: 'Podcast Title'},
+          {'itunes:author': 'Author'},
+          {'itunes:subtitle': 'Subtitle'},
+          {'itunes:summary': 'Summary'},
+          {'itunes:image': 'image.jpg'},
+          {
+            _name: 'enclosure',
+            _attrs: {
+              url: 'http://example.com/podcast.m4a',
+              length: '8727310',
+              type: 'audio/x-m4a'
+            }
+          },
+          {guid: 'http://example.com/archive/aae20050615.m4a'},
+          {pubDate: 'Wed, 15 Jun 2011 19:00:00 GMT'},
+          {'itunes:duration': '7:04'},
+          {'itunes:keywords': 'salt, pepper, shaker, exciting'}
+        ]
+      },
+      {
+        item: [
+          {title: 'Podcast2 Title'},
+          {'itunes:author': 'Author2'},
+          {'itunes:subtitle': 'Subtitle2'},
+          {'itunes:summary': 'Summary2'},
+          {'itunes:image': 'image2.jpg'},
+          {
+            _name: 'enclosure',
+            _attrs: {
+              url: 'http://example.com/podcast2.m4a',
+              length: '655555',
+              type: 'audio/x-m4a'
+            }
+          },
+          {guid: 'http://example.com/archive/aae2.m4a'},
+          {pubDate: 'Wed, 15 Jul 2011 19:00:00 GMT'},
+          {'itunes:duration': '11:20'},
+          {'itunes:keywords': 'foo, bar'}
+        ]
+      }
+    ]
+  }
+}, true, '  ');
+```
+
+Output:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+    <title>Title</title>
+    <link>google.com</link>
+    <language>en-us</language>
+    <copyright>Copyright 2011</copyright>
+    <itunes:subtitle>Subtitle</itunes:subtitle>
+    <itunes:author>Author</itunes:author>
+    <itunes:summary>Summary</itunes:summary>
+    <description>Description</description>
+    <itunes:owner>
+      <itunes:name>Name</itunes:name>
+      <itunes:email>Email</itunes:email>
+    </itunes:owner>
+    <itunes:image href="image.jpg"/>
+    <itunes:category text="Technology">
+      <itunes:category text="Gadgets"/>
+    </itunes:category>
+    <itunes:category text="TV &amp; Film"/>
+    <item>
+      <title>Podcast Title</title>
+      <itunes:author>Author</itunes:author>
+      <itunes:subtitle>Subtitle</itunes:subtitle>
+      <itunes:summary>Summary</itunes:summary>
+      <itunes:image>image.jpg</itunes:image>
+      <enclosure url="http://example.com/podcast.m4a" length="8727310" type="audio/x-m4a"/>
+      <guid>http://example.com/archive/aae20050615.m4a</guid>
+      <pubDate>Wed, 15 Jun 2011 19:00:00 GMT</pubDate>
+      <itunes:duration>7:04</itunes:duration>
+      <itunes:keywords>salt, pepper, shaker, exciting</itunes:keywords>
+    </item>
+    <item>
+      <title>Podcast2 Title</title>
+      <itunes:author>Author2</itunes:author>
+      <itunes:subtitle>Subtitle2</itunes:subtitle>
+      <itunes:summary>Summary2</itunes:summary>
+      <itunes:image>image2.jpg</itunes:image>
+      <enclosure url="http://example.com/podcast2.m4a" length="655555" type="audio/x-m4a"/>
+      <guid>http://example.com/archive/aae2.m4a</guid>
+      <pubDate>Wed, 15 Jul 2011 19:00:00 GMT</pubDate>
+      <itunes:duration>11:20</itunes:duration>
+      <itunes:keywords>foo, bar</itunes:keywords>
     </item>
   </channel>
 </rss>

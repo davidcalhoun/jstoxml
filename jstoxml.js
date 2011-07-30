@@ -58,10 +58,15 @@ var toXML = function(obj, addHeader, indent){
       return;
     }
     
-    // object
+    // object with tag name
+    if(obj._name){
+      fn(obj, indent);
+      return;
+    }
+    
+    // iterable object
     for(var key in obj){
       if(obj.hasOwnProperty(key) && obj[key]){
-        // 
         fn({_name: key, _content: obj[key]}, indent);
       } else if(!obj[key]) {   // null value (foo:'')
         fn(key, indent);       // output the keyname as a string ('foo')
