@@ -7,6 +7,10 @@ Everyone loves JSON, and the world is moving that direction, but we still need t
 
 This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml), which was found to be a bit too rough around the edges.  jstoxml attempts to fix that by being more flexible.
 
+
+Examples
+---------
+
 ```javascript
 {
   foo: 'bar',

@@ -1,25 +1,44 @@
 var jstoxml = function(obj, addHeader, indent){
+  // include XML header
   var out = addHeader ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
+  
   var origIndent = indent || '';
   indent = '';
   
+  // helper function to push a new line to the output
   var push = function(string){
     out += string + '\n';
   }
   
+  /* create a tag and add it to the output
+     Example:
+     outputTag({
+       name: 'myTag',      // creates a tag <myTag>
+       indent: '  ',       // indent string to prepend
+       closeTag: true,     // starts and closes a tag on the same line
+       selfCloseTag: true,
+       attrs: {            // attributes
+         foo: 'bar',       // results in <myTag foo="bar">
+         foo2: 'bar2'
+       }
+     });
+  */
   var outputTag = function(tag){
     var attrsString = '';
     var outputString = '';
     var attrs = tag.attrs || '';
     
+    // turn the attributes object into a string with key="value" pairs
     for(var attr in attrs){
       if(attrs.hasOwnProperty(attr)) {
         attrsString += ' ' + attr + '="' + attrs[attr] + '"';
       }
     }
     
+    // assemble the tag
     outputString += (tag.indent || '') + '<' + (tag.closeTag ? '/' : '') + tag.name + (!tag.closeTag ? attrsString : '') + (tag.selfCloseTag ? '/' : '') + '>';
     
+    // if the tag only contains a text string, output it and close the tag
     if(tag.text){
       outputString += tag.text + '</' + tag.name + '>';
     }
@@ -27,21 +46,25 @@ var jstoxml = function(obj, addHeader, indent){
     push(outputString);
   }
   
+  // custom-tailored iterator for input arrays/objects (NOT a general purpose iterator)
   var every = function(obj, fn, indent){
+    // array
     if(Array.isArray(obj)){
-      obj.every(function(elt){
+      obj.every(function(elt){  // for each element in the array
         fn(elt, indent);
-        return true;
+        return true;            // continue to iterate
       });
       
       return;
     }
     
+    // object
     for(var key in obj){
       if(obj.hasOwnProperty(key) && obj[key]){
+        // 
         fn({name: key, content: obj[key]}, indent);
-      } else if(!obj[key]) {
-        fn(key, indent);  //string
+      } else if(!obj[key]) {   // null value (foo:'')
+        fn(key, indent);       // output the keyname as a string ('foo')
       }
     }
   }
@@ -67,42 +90,42 @@ var jstoxml = function(obj, addHeader, indent){
       },
       
       'object': function(){
-        if(!input.name){
+        if(!input._name){
           every(input, convert, indent);
           return;
         }
         
         var outputTagObj = {
-          name: input.name,
+          name: input._name,
           indent: indent,
           attrs: input.attrs
         }
       
-        if(!input.content){
+        if(!input._content){
           outputTagObj.selfCloseTag = true;
           outputTag(outputTagObj);
           return;
         }
         
-        var type = typeof input.content;
+        var type = typeof input._content;
         
         var objContents = {
           'string': function(){
-            outputTagObj.text = input.content;
+            outputTagObj.text = input._content;
             outputTag(outputTagObj);
           },
           
           'object': function(){
             outputTag(outputTagObj);
             
-            every(input.content, convert, indent + origIndent);
+            every(input._content, convert, indent + origIndent);
             
             outputTagObj.closeTag = true;
             outputTag(outputTagObj);
           },
           
           'function': function(){
-            outputTagObj.text = input.content();
+            outputTagObj.text = input._content();
             outputTag(outputTagObj);
           }
         }

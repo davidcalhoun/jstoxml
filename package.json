@@ -1,9 +1,9 @@
 {
 	"name":"jstoxml",
 	"version":"0.0.1",
-	"description":"This renders a simple javascript object structure into reasonably complicated xml/html. js objects are easier to modify than strings so no need to parse a whole dom to reliably add a few elements",
-	"homepage":"http://github.com/soldair/node-jsontoxml",
-	"main":"./jsontoxml.js",
+	"description":"Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for RSS and Podcast feeds.  jstoxml makes it easy to contruct those feeds in JavaScript and output them to XML",
+	"homepage":"http://github.com/davidcalhoun/jstoxml",
+	"main":"./jstoxml.js",
 	"people":{
 		"author":{
 			"name":"David Calhoun",
@@ -13,7 +13,7 @@
 	},
 	"repository":{
 		"type":"git",
-		"url":"git://github.com/soldair/node-jsontoxml.git"
+		"url":"git://github.com/davidcalhoun/jstoxml.git"
 	},
 	"engines":{"node":">=0.2.0"}
 }
