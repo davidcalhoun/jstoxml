@@ -1,6 +1,6 @@
 {
 	"name": "jstoxml",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for RSS and Podcast feeds.  jstoxml makes it easy to contruct those feeds in JavaScript and output them to XML",
 	"homepage": "http://github.com/davidcalhoun/jstoxml",
 	"main": "./jstoxml.js",
