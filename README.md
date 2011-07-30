@@ -27,6 +27,7 @@ jstoxml has a very simple interface: jstoxml.toXML(input, addHeader [Boolean], i
 * addHeader (optional): pass in true to include the XML header (&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;)
 * indent (optional): string which is used as an indent (i.e. '  ')
 
+
 #### Example 1: Simple object
 ```javascript
 jstoxml.toXML({
@@ -35,9 +36,11 @@ jstoxml.toXML({
 });
 ```
 Output:
-```xml
+
+```
 <foo>bar</foo><foo2>bar2</foo2>
 ```
+
 
 #### Example 2: Simple array
 ```javascript
@@ -47,12 +50,15 @@ jstoxml.toXML([
 ]);
 ```
 Output:
-```xml
+
+```
 <foo>bar</foo><foo2>bar2</foo2>
 ```
 
+
 #### Example 3: Duplicate tag names
 Because we can't have duplicate keys in objects, we have to take advantage of arrays to get duplicate tag names:
+
 ```javascript
 jstoxml.toXML([
   {foo: 'bar'},
@@ -60,9 +66,11 @@ jstoxml.toXML([
 ]);
 ```
 Output:
-```xml
+
+```
 <foo>bar</foo><foo>bar2</foo>
 ```
+
 
 #### Example 4: Attributes
 ```javascript
@@ -76,12 +84,15 @@ jstoxml.toXML({
 });
 ```
 Output:
-```xml
+
+```
 <foo a="b" c="d">bar</foo>
 ```
 
+
 #### Example 5: Tags mixed with text content
 To output text content, set a key to an empty string value:
+
 ```javascript
 jstoxml.toXML({
   'text1': '',
@@ -91,9 +102,11 @@ jstoxml.toXML({
 
 ```
 Output:
-```xml
+
+```
 text1<foo>bar</foo>text2
 ```
+
 
 #### Example 6: Nested tags (with indenting)
 
@@ -106,12 +119,14 @@ jstoxml.toXML({
 }, false, '  ');
 ```
 Output:
-```xml
+
+```
 <a>
   <foo>bar</foo>
   <foo2>bar2</foo2>
 </a>
 ```
+
 
 #### Example 7: Nested tags with attributes (with indenting)
 ```javascript
@@ -135,7 +150,8 @@ jstoxml.toXML({
 }, false, '  ');
 ```
 Output:
-```xml
+
+```
 <ooo>
   <foo a="b">
     <bar c="d"/>
@@ -156,7 +172,8 @@ jstoxml.toXML({
 });
 ```
 Output:
-```xml
+
+```
 <onePlusTwo>3</onePlusTwo><date>Sat Jul 30 2011 17:49:52 GMT+0900 (JST)</date>
 ```
 
@@ -200,7 +217,8 @@ jstoxml.toXML({
 }, true, '  ');
 ```
 Output:
-```xml
+
+```
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
