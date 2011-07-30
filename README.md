@@ -132,22 +132,18 @@ Output:
 #### Example 7: Nested tags with attributes (with indenting)
 ```javascript
 jstoxml.toXML({
-  ooo: [
-    {
-      _name: 'foo',
+  ooo: {
+    _name: 'foo',
+    _attrs: {
+      a: 'b'
+    },
+    _content: {
+      _name: 'bar',
       _attrs: {
-        a: 'b'
-      },
-      _content: [
-        {
-          _name: 'bar',
-          _attrs: {
-            c: 'd'
-          }
-        }
-      ]
+        c: 'd'
+      }
     }
-  ]
+  }
 }, false, '  ');
 ```
 Output:
@@ -158,6 +154,29 @@ Output:
     <bar c="d"/>
   </foo>
 </ooo>
+```
+
+Note that cases like this might be especially hard to read because of the deep nesting, so it's recommend you use something like this pattern instead, which breaks it up into more readable pieces:
+
+```javascript
+var bar = {
+  _name: 'bar',
+  _attrs: {
+    c: 'd'
+  }
+};
+
+var foo = {
+  _name: 'foo',
+  _attrs: {
+    a: 'b'
+  },
+  _content: bar
+}
+
+return jstoxml.toXML({
+  ooo: foo
+}, false, '  ')
 ```
 
 

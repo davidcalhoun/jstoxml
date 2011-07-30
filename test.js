@@ -294,22 +294,43 @@ var jstoxml = require('./jstoxml.js');
     name: 'example7-nested-tags-with-attributes',
     input: function(){
       return jstoxml.toXML({
-        ooo: [
-          {
-            _name: 'foo',
+        ooo: {
+          _name: 'foo',
+          _attrs: {
+            a: 'b'
+          },
+          _content: {
+            _name: 'bar',
             _attrs: {
-              a: 'b'
-            },
-            _content: [
-              {
-                _name: 'bar',
-                _attrs: {
-                  c: 'd'
-                }
-              }
-            ]
+              c: 'd'
+            }
           }
-        ]
+        }
+      }, false, '  ')
+    },
+    expectedOutput: '<ooo>\n  <foo a="b">\n    <bar c="d"/>\n  </foo>\n</ooo>\n'
+  });
+  
+  addTest({
+    name: 'example7b',
+    input: function(){
+      var bar = {
+        _name: 'bar',
+        _attrs: {
+          c: 'd'
+        }
+      };
+      
+      var foo = {
+        _name: 'foo',
+        _attrs: {
+          a: 'b'
+        },
+        _content: bar
+      }
+      
+      return jstoxml.toXML({
+        ooo: foo
       }, false, '  ')
     },
     expectedOutput: '<ooo>\n  <foo a="b">\n    <bar c="d"/>\n  </foo>\n</ooo>\n'
