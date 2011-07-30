@@ -1,4 +1,4 @@
-var jstoxml = function(obj, addHeader, indent){
+var toXML = function(obj, addHeader, indent){
   // include XML header
   var out = addHeader ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
   
@@ -62,7 +62,7 @@ var jstoxml = function(obj, addHeader, indent){
     for(var key in obj){
       if(obj.hasOwnProperty(key) && obj[key]){
         // 
-        fn({name: key, content: obj[key]}, indent);
+        fn({_name: key, _content: obj[key]}, indent);
       } else if(!obj[key]) {   // null value (foo:'')
         fn(key, indent);       // output the keyname as a string ('foo')
       }
@@ -98,7 +98,7 @@ var jstoxml = function(obj, addHeader, indent){
         var outputTagObj = {
           name: input._name,
           indent: indent,
-          attrs: input.attrs
+          attrs: input._attrs
         }
       
         if(!input._content){
@@ -143,4 +143,4 @@ var jstoxml = function(obj, addHeader, indent){
   return out;
 };
 
-exports.jstoxml = jstoxml;
+exports.toXML = toXML;

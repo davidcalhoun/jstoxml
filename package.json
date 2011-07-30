@@ -1,19 +1,10 @@
 {
-	"name":"jstoxml",
-	"version":"0.0.2",
-	"description":"Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for RSS and Podcast feeds.  jstoxml makes it easy to contruct those feeds in JavaScript and output them to XML",
-	"homepage":"http://github.com/davidcalhoun/jstoxml",
-	"main":"./jstoxml.js",
-	"people":{
-		"author":{
-			"name":"David Calhoun",
-			"email":"david.b.calhoun@gmail.com",
-			"url":"http://davidbcalhoun.com"
-		}
-	},
-	"repository":{
-		"type":"git",
-		"url":"git://github.com/davidcalhoun/jstoxml.git"
-	},
-	"engines":{"node":">=0.2.0"}
+	"name": "jstoxml",
+	"version": "0.0.5",
+	"description": "Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for RSS and Podcast feeds.  jstoxml makes it easy to contruct those feeds in JavaScript and output them to XML",
+	"homepage": "http://github.com/davidcalhoun/jstoxml",
+	"main": "./jstoxml.js",
+	"author": "David Calhoun <david.b.calhoun@gmail.com>",
+	"repository": "git://github.com/davidcalhoun/jstoxml",
+	"engines": {"node":">=0.2.0"}
 }

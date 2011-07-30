@@ -8,8 +8,12 @@ Everyone loves JSON, and the world is moving that direction, but we still need t
 This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml), which was found to be a bit too rough around the edges.  jstoxml attempts to fix that by being more flexible.
 
 
-Examples
----------
+### Examples
+First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
+```javascript
+var jstoxml = require('jstoxml');
+```
+
 
 ```javascript
 {
