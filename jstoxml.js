@@ -7,7 +7,7 @@ var toXML = function(obj, addHeader, indent){
   
   // helper function to push a new line to the output
   var push = function(string){
-    out += string + '\n';
+    out += string + (origIndent ? '\n' : '');
   }
   
   /* create a tag and add it to the output
@@ -81,6 +81,10 @@ var toXML = function(obj, addHeader, indent){
         push(indent + input);
       },
       
+      'number': function(){
+        push(indent + input);
+      },
+      
       'array': function(){
         every(input, convert, indent);
       },
@@ -115,7 +119,12 @@ var toXML = function(obj, addHeader, indent){
             outputTag(outputTagObj);
           },
           
-          'object': function(){
+          'number': function(){
+            outputTagObj.text = input._content;
+            outputTag(outputTagObj);
+          },
+          
+          'object': function(){  // or Array
             outputTag(outputTagObj);
             
             every(input._content, convert, indent + origIndent);
@@ -125,7 +134,7 @@ var toXML = function(obj, addHeader, indent){
           },
           
           'function': function(){
-            outputTagObj.text = input._content();
+            outputTagObj.text = input._content();  // () to execute the fn
             outputTag(outputTagObj);
           }
         }
