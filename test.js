@@ -221,19 +221,19 @@ var jstoxml = require('./jstoxml.js');
     name: 'entities',
     input: function(){
       return jstoxml.toXML({
-				foo: '<a>',
-				bar: '"b"',
-				baz: '\'&whee\''
-			},
-			{
-				filter: {
-					'<': '&lt;', 
-					'>': '&gt;',
-					'"': '&quot;',
-					'\'': '&apos;',
-					'&': '&amp;'
-				}
-			});
+        foo: '<a>',
+        bar: '"b"',
+        baz: '\'&whee\''
+      },
+      {
+        filter: {
+          '<': '&lt;', 
+          '>': '&gt;',
+          '"': '&quot;',
+          '\'': '&apos;',
+          '&': '&amp;'
+        }
+      });
     },
     expectedOutput: '<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>'
   });

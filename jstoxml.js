@@ -1,23 +1,23 @@
 var toXML = function(obj, config){
   // include XML header
-	config = config || {};
+  config = config || {};
   var out = config.header ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
   
   var origIndent = config.indent || '';
   indent = '';
 
-	var filter = function customFilter(txt) {
-		if(!config.filter) return txt;
-		var mappings = config.filter;
-		var replacements = [];
-		for(var map in mappings) {
-			if(!mappings.hasOwnProperty(map)) continue;
-			replacements.push(map);
-		}
-		return txt.replace(new RegExp('(' + replacements.join('|') + ')', 'g'), function(str, entity) {
-			return mappings[entity] || '';
-		});
-	};
+  var filter = function customFilter(txt) {
+    if(!config.filter) return txt;
+    var mappings = config.filter;
+    var replacements = [];
+    for(var map in mappings) {
+      if(!mappings.hasOwnProperty(map)) continue;
+      replacements.push(map);
+    }
+    return txt.replace(new RegExp('(' + replacements.join('|') + ')', 'g'), function(str, entity) {
+      return mappings[entity] || '';
+    });
+  };
   
   // helper function to push a new line to the output
   var push = function(string){
