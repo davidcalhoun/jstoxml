@@ -10,11 +10,11 @@ var jstoxml = require('./jstoxml.js');
   
   var addTest = function(obj){
     tests.push(obj);
-  }
+  };
   
   var showReport = function(){
     console.log(results);
-  }
+  };
   
   var passFail = function(test){
     var output;
@@ -36,18 +36,18 @@ var jstoxml = require('./jstoxml.js');
       console.log(test.name + ' failed.  ' + results.testsRun + '/' + tests.length);
       console.log(e);
     }
-  }
+  };
   
   var runTests = function(){
     for(var i=0, len=tests.length; i<len; i++){
       passFail(tests[i]);
     }
-  }
+  };
   
   addTest({
     name: 'string',
     input: function(){
-      return jstoxml.toXML('foo')
+      return jstoxml.toXML('foo');
     },
     expectedOutput: 'foo'
   });
@@ -55,7 +55,7 @@ var jstoxml = require('./jstoxml.js');
   addTest({
     name: 'number',
     input: function(){
-      return jstoxml.toXML(5)
+      return jstoxml.toXML(5);
     },
     expectedOutput: '5'
   });
@@ -65,7 +65,7 @@ var jstoxml = require('./jstoxml.js');
     input: function(){
       return jstoxml.toXML(function(){
         return 999;
-      })
+      });
     },
     expectedOutput: '999'
   });
@@ -76,7 +76,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML([
         {foo: 'bar'},
         {foo2: 'bar2'}
-      ])
+      ]);
     },
     expectedOutput: '<foo>bar</foo><foo2>bar2</foo2>'
   });
@@ -87,7 +87,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML([
         {foo: 'bar'},
         {foo2: 'bar2'}
-      ])
+      ]);
     },
     expectedOutput: '<foo>bar</foo><foo2>bar2</foo2>'
   });
@@ -98,7 +98,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML({
         foo: 'bar',
         foo2: 'bar2'
-      })
+      });
     },
     expectedOutput: '<foo>bar</foo><foo2>bar2</foo2>'
   });
@@ -109,7 +109,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML({
         foo: 'bar',
         foo2: 'bar2'
-      }, true)
+      }, {header: true});
     },
     expectedOutput: '<?xml version="1.0" encoding="UTF-8"?>\n<foo>bar</foo><foo2>bar2</foo2>'
   });
@@ -122,7 +122,7 @@ var jstoxml = require('./jstoxml.js');
           foo: 'bar',
           foo2: 'bar2'
         }
-      }, false, '  ')
+      }, {header: false, indent: '  '});
     },
     expectedOutput: '<a>\n  <foo>bar</foo>\n  <foo2>bar2</foo2>\n</a>\n'
   });
@@ -136,7 +136,7 @@ var jstoxml = require('./jstoxml.js');
           foo: 'bar',
           foo2: 'bar2'
         }
-      })
+      });
     },
     expectedOutput: '<a foo="bar" foo2="bar2"/>'
   });
@@ -151,7 +151,7 @@ var jstoxml = require('./jstoxml.js');
           foo2: 'bar2'
         },
         _content: 'la dee da'
-      })
+      });
     },
     expectedOutput: '<a foo="bar" foo2="bar2">la dee da</a>'
   });
@@ -163,7 +163,7 @@ var jstoxml = require('./jstoxml.js');
         'blah': '',
         foo: 'bar',
         'more blah': ''
-      })
+      });
     },
     expectedOutput: 'blah<foo>bar</foo>more blah'
   });
@@ -176,7 +176,7 @@ var jstoxml = require('./jstoxml.js');
           foo: 'bar',
           foo2: 'bar2'
         }
-      })
+      });
     },
     expectedOutput: '<a><foo>bar</foo><foo2>bar2</foo2></a>'
   });
@@ -212,9 +212,30 @@ var jstoxml = require('./jstoxml.js');
             }
           }
         }
-      })
+      });
     },
     expectedOutput: '<a><b><c><d><e><f><g><h><i><j><k><l><m><foo>bar</foo></m></l></k></j></i></h></g></f></e></d></c></b></a>'
+  });
+
+  addTest({
+    name: 'entities',
+    input: function(){
+      return jstoxml.toXML({
+				foo: '<a>',
+				bar: '"b"',
+				baz: '\'&whee\''
+			},
+			{
+				filter: {
+					'<': '&lt;', 
+					'>': '&gt;',
+					'"': '&quot;',
+					'\'': '&apos;',
+					'&': '&amp;'
+				}
+			});
+    },
+    expectedOutput: '<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>'
   });
   
   addTest({
@@ -223,7 +244,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML({
         foo: 'bar',
         foo2: 'bar2'
-      })
+      });
     },
     expectedOutput: '<foo>bar</foo><foo2>bar2</foo2>'
   });
@@ -234,7 +255,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML([
         {foo: 'bar'},
         {foo2: 'bar2'}
-      ])
+      ]);
     },
     expectedOutput: '<foo>bar</foo><foo2>bar2</foo2>'
   });
@@ -245,7 +266,7 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML([
         {foo: 'bar'},
         {foo: 'bar2'}
-      ])
+      ]);
     },
     expectedOutput: '<foo>bar</foo><foo>bar2</foo>'
   });
@@ -260,7 +281,7 @@ var jstoxml = require('./jstoxml.js');
           a: 'b',
           c: 'd'
         }
-      })
+      });
     },
     expectedOutput: '<foo a="b" c="d">bar</foo>'
   });
@@ -272,7 +293,7 @@ var jstoxml = require('./jstoxml.js');
         'text1': '',
         foo: 'bar',
         'text2': ''
-      })
+      });
     },
     expectedOutput: 'text1<foo>bar</foo>text2'
   });
@@ -285,7 +306,7 @@ var jstoxml = require('./jstoxml.js');
           foo: 'bar',
           foo2: 'bar2'
         }
-      }, false, '  ')
+      }, {header: false, indent: '  '});
     },
     expectedOutput: '<a>\n  <foo>bar</foo>\n  <foo2>bar2</foo2>\n</a>\n'
   });
@@ -306,7 +327,7 @@ var jstoxml = require('./jstoxml.js');
             }
           }
         }
-      }, false, '  ')
+      }, {header: false, indent: '  '});
     },
     expectedOutput: '<ooo>\n  <foo a="b">\n    <bar c="d"/>\n  </foo>\n</ooo>\n'
   });
@@ -327,11 +348,11 @@ var jstoxml = require('./jstoxml.js');
           a: 'b'
         },
         _content: bar
-      }
+      };
       
       return jstoxml.toXML({
         ooo: foo
-      }, false, '  ')
+      }, {header: false, indent: '  '});
     },
     expectedOutput: '<ooo>\n  <foo a="b">\n    <bar c="d"/>\n  </foo>\n</ooo>\n'
   });
@@ -343,7 +364,7 @@ var jstoxml = require('./jstoxml.js');
         onePlusTwo: function(){
           return 1 + 2;
         }
-      })
+      });
     },
     expectedOutput: '<onePlusTwo>3</onePlusTwo>'
   });
@@ -386,7 +407,7 @@ var jstoxml = require('./jstoxml.js');
             }}
           ]
         }
-      }, true, '  ')
+      }, {header: true, indent: '  '});
     },
     expectedOutput: '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>RSS Example</title>\n    <description>Description</description>\n    <link>google.com</link>\n    <lastBuildDate>Sat Jul 30 2011 18:14:25 GMT+0900 (JST)</lastBuildDate>\n    <pubDate>Sat Jul 30 2011 18:14:25 GMT+0900 (JST)</pubDate>\n    <language>en</language>\n    <item>\n      <title>Item title</title>\n      <link>Item link</link>\n      <description>Item Description</description>\n      <pubDate>Sat Jul 30 2011 18:33:47 GMT+0900 (JST)</pubDate>\n    </item>\n    <item>\n      <title>Item2 title</title>\n      <link>Item2 link</link>\n      <description>Item2 Description</description>\n      <pubDate>Sat Jul 30 2011 18:33:47 GMT+0900 (JST)</pubDate>\n    </item>\n  </channel>\n</rss>\n'
   });
@@ -482,7 +503,7 @@ var jstoxml = require('./jstoxml.js');
             }
           ]
         }
-      }, true, '  ')
+      }, {header: true, indent: '  '});
     },
     expectedOutput: '<?xml version="1.0" encoding="UTF-8"?>\n<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">\n  <channel>\n    <title>Title</title>\n    <link>google.com</link>\n    <language>en-us</language>\n    <copyright>Copyright 2011</copyright>\n    <itunes:subtitle>Subtitle</itunes:subtitle>\n    <itunes:author>Author</itunes:author>\n    <itunes:summary>Summary</itunes:summary>\n    <description>Description</description>\n    <itunes:owner>\n      <itunes:name>Name</itunes:name>\n      <itunes:email>Email</itunes:email>\n    </itunes:owner>\n    <itunes:image href="image.jpg"/>\n    <itunes:category text="Technology">\n      <itunes:category text="Gadgets"/>\n    </itunes:category>\n    <itunes:category text="TV &amp; Film"/>\n    <item>\n      <title>Podcast Title</title>\n      <itunes:author>Author</itunes:author>\n      <itunes:subtitle>Subtitle</itunes:subtitle>\n      <itunes:summary>Summary</itunes:summary>\n      <itunes:image>image.jpg</itunes:image>\n      <enclosure url="http://example.com/podcast.m4a" length="8727310" type="audio/x-m4a"/>\n      <guid>http://example.com/archive/aae20050615.m4a</guid>\n      <pubDate>Wed, 15 Jun 2011 19:00:00 GMT</pubDate>\n      <itunes:duration>7:04</itunes:duration>\n      <itunes:keywords>salt, pepper, shaker, exciting</itunes:keywords>\n    </item>\n    <item>\n      <title>Podcast2 Title</title>\n      <itunes:author>Author2</itunes:author>\n      <itunes:subtitle>Subtitle2</itunes:subtitle>\n      <itunes:summary>Summary2</itunes:summary>\n      <itunes:image>image2.jpg</itunes:image>\n      <enclosure url="http://example.com/podcast2.m4a" length="655555" type="audio/x-m4a"/>\n      <guid>http://example.com/archive/aae2.m4a</guid>\n      <pubDate>Wed, 15 Jul 2011 19:00:00 GMT</pubDate>\n      <itunes:duration>11:20</itunes:duration>\n      <itunes:keywords>foo, bar</itunes:keywords>\n    </item>\n  </channel>\n</rss>\n'
   });

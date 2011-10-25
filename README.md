@@ -1,6 +1,11 @@
 jstoxml
 =========
 
+### Version 0.1.0
+* Added support for custom filters (for XML, UTF-8 entities, or whatever you need it for)
+* Changed to a single options object, passed as the second parameter.  This will break older versions that use the XML header or indentation!  They will need to be updated (see the examples below).
+
+
 ### Convert native JavaScript objects (JSON) to XML
 
 Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for [RSS feeds](http://www.rssboard.org/rss-specification) and [Podcasts](http://www.apple.com/itunes/podcasts/specs.html).
@@ -117,7 +122,7 @@ jstoxml.toXML({
     foo: 'bar',
     foo2: 'bar2'
   }
-}, false, '  ');
+}, {header: false, indent: '  '});
 ```
 Output:
 
@@ -144,7 +149,7 @@ jstoxml.toXML({
       }
     }
   }
-}, false, '  ');
+}, {header: false, indent: '  '});
 ```
 Output:
 
@@ -176,7 +181,7 @@ var foo = {
 
 return jstoxml.toXML({
   ooo: foo
-}, false, '  ')
+}, {header: false, indent: '  '})
 ```
 
 
@@ -234,7 +239,7 @@ jstoxml.toXML({
       }}
     ]
   }
-}, true, '  ');
+}, {header: true, indent: '  '});
 ```
 Output:
 
@@ -357,7 +362,7 @@ jstoxml.toXML({
       }
     ]
   }
-}, true, '  ');
+}, {header: true, indent: '  '});
 ```
 
 Output:
@@ -409,4 +414,29 @@ Output:
     </item>
   </channel>
 </rss>
+```
+
+#### Example 11: Custom filter for XML entities, or whatever
+
+```javascript
+jstoxml.toXML({
+	foo: '<a>',
+	bar: '"b"',
+	baz: '\'&whee\''
+},
+{
+	filter: {
+		'<': '&lt;', 
+		'>': '&gt;',
+		'"': '&quot;',
+		'\'': '&apos;',
+		'&': '&amp;'
+	}
+});
+```
+
+Output:
+
+```
+<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>
 ```

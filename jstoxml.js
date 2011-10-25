@@ -1,14 +1,28 @@
-var toXML = function(obj, addHeader, indent){
+var toXML = function(obj, config){
   // include XML header
-  var out = addHeader ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
+	config = config || {};
+  var out = config.header ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
   
-  var origIndent = indent || '';
+  var origIndent = config.indent || '';
   indent = '';
+
+	var filter = function customFilter(txt) {
+		if(!config.filter) return txt;
+		var mappings = config.filter;
+		var replacements = [];
+		for(var map in mappings) {
+			if(!mappings.hasOwnProperty(map)) continue;
+			replacements.push(map);
+		}
+		return txt.replace(new RegExp('(' + replacements.join('|') + ')', 'g'), function(str, entity) {
+			return mappings[entity] || '';
+		});
+	};
   
   // helper function to push a new line to the output
   var push = function(string){
     out += string + (origIndent ? '\n' : '');
-  }
+  };
   
   /* create a tag and add it to the output
      Example:
@@ -40,11 +54,11 @@ var toXML = function(obj, addHeader, indent){
     
     // if the tag only contains a text string, output it and close the tag
     if(tag.text){
-      outputString += tag.text + '</' + tag.name + '>';
+      outputString += filter(tag.text) + '</' + tag.name + '>';
     }
     
     push(outputString);
-  }
+  };
   
   // custom-tailored iterator for input arrays/objects (NOT a general purpose iterator)
   var every = function(obj, fn, indent){
@@ -72,7 +86,7 @@ var toXML = function(obj, addHeader, indent){
         fn(key, indent);       // output the keyname as a string ('foo')
       }
     }
-  }
+  };
   
   var convert = function convert(input, indent){
     var type = typeof input;
@@ -83,7 +97,7 @@ var toXML = function(obj, addHeader, indent){
     
     var path = {
       'string': function(){
-        push(indent + input);
+        push(indent + filter(input));
       },
       
       'number': function(){
@@ -108,7 +122,7 @@ var toXML = function(obj, addHeader, indent){
           name: input._name,
           indent: indent,
           attrs: input._attrs
-        }
+        };
       
         if(!input._content){
           outputTagObj.selfCloseTag = true;
@@ -142,15 +156,15 @@ var toXML = function(obj, addHeader, indent){
             outputTagObj.text = input._content();  // () to execute the fn
             outputTag(outputTagObj);
           }
-        }
+        };
         
-        objContents[type] && objContents[type]();
-      },
+        if(objContents[type]) objContents[type]();
+      }
       
-    }
+    };
     
-    path[type] && path[type]();
-  }
+    if(path[type]) path[type]();
+  };
   
   convert(obj, indent);
   
