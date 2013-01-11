@@ -80,7 +80,8 @@ var toXML = function(obj, config){
     
     // iterable object
     for(var key in obj){
-      if(obj.hasOwnProperty(key) && obj[key]){
+      var type = typeof obj[key];
+      if(obj.hasOwnProperty(key) && (obj[key] || type === 'boolean' || type === 'number')){
         fn({_name: key, _content: obj[key]}, indent);
       } else if(!obj[key]) {   // null value (foo:'')
         fn(key, indent);       // output the keyname as a string ('foo')
@@ -98,6 +99,10 @@ var toXML = function(obj, config){
     var path = {
       'string': function(){
         push(indent + filter(input));
+      },
+
+      'boolean': function(){
+        push(indent + (input ? 'true' : 'false'));
       },
       
       'number': function(){
@@ -123,23 +128,28 @@ var toXML = function(obj, config){
           indent: indent,
           attrs: input._attrs
         };
-      
-        if(!input._content){
+        
+        var type = typeof input._content;
+
+        if(type === 'undefined'){
           outputTagObj.selfCloseTag = true;
           outputTag(outputTagObj);
           return;
         }
-        
-        var type = typeof input._content;
         
         var objContents = {
           'string': function(){
             outputTagObj.text = input._content;
             outputTag(outputTagObj);
           },
+
+          'boolean': function(){
+            outputTagObj.text = (input._content ? 'true' : 'false');
+            outputTag(outputTagObj);
+          },
           
           'number': function(){
-            outputTagObj.text = input._content;
+            outputTagObj.text = input._content.toString();
             outputTag(outputTagObj);
           },
           
