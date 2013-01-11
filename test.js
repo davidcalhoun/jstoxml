@@ -51,6 +51,14 @@ var jstoxml = require('./jstoxml.js');
     },
     expectedOutput: 'foo'
   });
+
+  addTest({
+    name: 'boolean',
+    input: function(){
+      return jstoxml.toXML(true);
+    },
+    expectedOutput: 'true'
+  });
   
   addTest({
     name: 'number',
@@ -162,10 +170,13 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML({
         'blah': '',
         foo: 'bar',
-        'more blah': ''
+        'more blah': '',
+        bar: 0,
+        'more more blah': null,
+        baz: false
       });
     },
-    expectedOutput: 'blah<foo>bar</foo>more blah'
+    expectedOutput: 'blah<foo>bar</foo>more blah<bar>0</bar>more more blah<baz>false</baz>'
   });
   
   addTest({
