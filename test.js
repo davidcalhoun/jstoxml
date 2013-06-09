@@ -535,14 +535,30 @@ var jstoxml = require('./jstoxml.js');
   });
 
   addTest({
-    name: 'bug4',
+    name: 'bug4a',
     input: function(){
       return jstoxml.toXML({
-        foo: 4
+        foo: 4,
+        bar: '&'
       });
     },
-    expectedOutput: '<foo>true</foo><bar></bar><foo2>false</foo2><ok>This is ok</ok><ok2>false</ok2><ok3>true</ok3>'
-  });  
+    expectedOutput: '<foo>4</foo><bar>&</bar>'
+  });
+
+  addTest({
+    name: 'bug4b',
+    input: function(){
+      return jstoxml.toXML({
+        foo: '&'
+      },
+      {
+        filter: {
+          '&': '&amp;'
+        }
+      });
+    },
+    expectedOutput: '<foo>&amp;</foo>'
+  });   
   
   runTests();
   showReport();
