@@ -6,5 +6,8 @@
 	"main": "./jstoxml.js",
 	"author": "David Calhoun <david.b.calhoun@gmail.com>",
 	"repository": "git://github.com/davidcalhoun/jstoxml",
-	"engines": {"node":">=0.2.0"}
+	"engines": {"node":">=0.2.0"},
+	"scripts": {
+		"test": "node test.js"
+	}
 }
