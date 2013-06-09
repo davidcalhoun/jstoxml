@@ -168,9 +168,9 @@ var jstoxml = require('./jstoxml.js');
     name: 'object-mixed',
     input: function(){
       return jstoxml.toXML({
-        'blah': '',
+        'blah': null,
         foo: 'bar',
-        'more blah': '',
+        'more blah': null,
         bar: 0,
         'more more blah': null,
         baz: false
@@ -301,9 +301,9 @@ var jstoxml = require('./jstoxml.js');
     name: 'example5-tags-with-text-nodes',
     input: function(){
       return jstoxml.toXML({
-        'text1': '',
+        'text1': null,
         foo: 'bar',
-        'text2': ''
+        'text2': null
       });
     },
     expectedOutput: 'text1<foo>bar</foo>text2'
@@ -517,6 +517,21 @@ var jstoxml = require('./jstoxml.js');
       }, {header: true, indent: '  '});
     },
     expectedOutput: '<?xml version="1.0" encoding="UTF-8"?>\n<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">\n  <channel>\n    <title>Title</title>\n    <link>google.com</link>\n    <language>en-us</language>\n    <copyright>Copyright 2011</copyright>\n    <itunes:subtitle>Subtitle</itunes:subtitle>\n    <itunes:author>Author</itunes:author>\n    <itunes:summary>Summary</itunes:summary>\n    <description>Description</description>\n    <itunes:owner>\n      <itunes:name>Name</itunes:name>\n      <itunes:email>Email</itunes:email>\n    </itunes:owner>\n    <itunes:image href="image.jpg"/>\n    <itunes:category text="Technology">\n      <itunes:category text="Gadgets"/>\n    </itunes:category>\n    <itunes:category text="TV &amp; Film"/>\n    <item>\n      <title>Podcast Title</title>\n      <itunes:author>Author</itunes:author>\n      <itunes:subtitle>Subtitle</itunes:subtitle>\n      <itunes:summary>Summary</itunes:summary>\n      <itunes:image>image.jpg</itunes:image>\n      <enclosure url="http://example.com/podcast.m4a" length="8727310" type="audio/x-m4a"/>\n      <guid>http://example.com/archive/aae20050615.m4a</guid>\n      <pubDate>Wed, 15 Jun 2011 19:00:00 GMT</pubDate>\n      <itunes:duration>7:04</itunes:duration>\n      <itunes:keywords>salt, pepper, shaker, exciting</itunes:keywords>\n    </item>\n    <item>\n      <title>Podcast2 Title</title>\n      <itunes:author>Author2</itunes:author>\n      <itunes:subtitle>Subtitle2</itunes:subtitle>\n      <itunes:summary>Summary2</itunes:summary>\n      <itunes:image>image2.jpg</itunes:image>\n      <enclosure url="http://example.com/podcast2.m4a" length="655555" type="audio/x-m4a"/>\n      <guid>http://example.com/archive/aae2.m4a</guid>\n      <pubDate>Wed, 15 Jul 2011 19:00:00 GMT</pubDate>\n      <itunes:duration>11:20</itunes:duration>\n      <itunes:keywords>foo, bar</itunes:keywords>\n    </item>\n  </channel>\n</rss>\n'
+  });
+
+  addTest({
+    name: 'bug3',
+    input: function(){
+      return jstoxml.toXML({
+        foo: true,
+        bar: '',
+        foo2: false,
+        ok: 'This is ok',
+        ok2: 'false',
+        ok3: 'true'
+      });
+    },
+    expectedOutput: '<foo>true</foo><bar></bar><foo2>false</foo2><ok>This is ok</ok><ok2>false</ok2><ok3>true</ok3>'
   });
   
   runTests();

@@ -53,7 +53,7 @@ var toXML = function(obj, config){
     outputString += (tag.indent || '') + '<' + (tag.closeTag ? '/' : '') + tag.name + (!tag.closeTag ? attrsString : '') + (tag.selfCloseTag ? '/' : '') + '>';
     
     // if the tag only contains a text string, output it and close the tag
-    if(tag.text){
+    if(tag.text || tag.text === ''){
       outputString += filter(tag.text) + '</' + tag.name + '>';
     }
     
@@ -81,10 +81,18 @@ var toXML = function(obj, config){
     // iterable object
     for(var key in obj){
       var type = typeof obj[key];
+
       if(obj.hasOwnProperty(key) && (obj[key] || type === 'boolean' || type === 'number')){
         fn({_name: key, _content: obj[key]}, indent);
-      } else if(!obj[key]) {   // null value (foo:'')
+      //} else if(!obj[key]) {   // null value (foo:'')
+      } else if(obj.hasOwnProperty(key) && obj[key] === null) {   // null value (foo:null)
         fn(key, indent);       // output the keyname as a string ('foo')
+      } else if(obj.hasOwnProperty(key) && obj[key] === '') {
+        // blank string
+        outputTag({
+          name: key,
+          text: ''
+        });
       }
     }
   };

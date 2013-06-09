@@ -1,11 +1,6 @@
 jstoxml
 =========
 
-### Version 0.1.0
-* Added support for custom filters (for XML, UTF-8 entities, or whatever you need it for)
-* Changed to a single options object, passed as the second parameter.  This will break older versions that use the XML header or indentation!  They will need to be updated (see the examples below).
-
-
 ### Convert native JavaScript objects (JSON) to XML
 
 Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for [RSS feeds](http://www.rssboard.org/rss-specification) and [Podcasts](http://www.apple.com/itunes/podcasts/specs.html).
@@ -19,6 +14,30 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Installation
 * npm install jstoxml
+
+### Version 0.2.1
+* IMPORTANT: empty text strings will now output as empty XML tags (NOT text content), which makes more sense and is more intuitive (see issue #3).  To output text content, set the value to null instead (see Example 5 below).
+
+For instance:
+jstoxml.toXML({
+  a: '1',
+  foo: '',
+  b: '2'
+});
+// Output: <a>1</a><foo></foo><b>2</b>
+
+jstoxml.toXML({
+  a: '1',
+  foo: null,
+  b: '2'
+});
+// Output: <a>1</a>foo<b>2</b>
+
+
+### Version 0.1.0
+* Added support for custom filters (for XML, UTF-8 entities, or whatever you need it for)
+* Changed to a single options object, passed as the second parameter.  This will break older versions that use the XML header or indentation!  They will need to be updated (see the examples below).
+
 
 ### Examples
 First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
@@ -98,13 +117,13 @@ Output:
 
 
 #### Example 5: Tags mixed with text content
-To output text content, set a key to an empty string value:
+To output text content, set a key to null:
 
 ```javascript
 jstoxml.toXML({
-  'text1': '',
+  'text1': null,
   foo: 'bar',
-  'text2': ''
+  'text2': null
 });
 
 ```
@@ -440,4 +459,20 @@ Output:
 
 ```
 <foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>
+```
+
+
+#### Example 12: Empty tags
+
+```javascript
+jstoxml.toXML({
+  foo: '',
+  bar: 'whee'
+});
+```
+
+Output:
+
+```
+<foo></foo><bar>whee</bar>
 ```
