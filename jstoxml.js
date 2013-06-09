@@ -14,7 +14,7 @@ var toXML = function(obj, config){
       if(!mappings.hasOwnProperty(map)) continue;
       replacements.push(map);
     }
-    return txt.replace(new RegExp('(' + replacements.join('|') + ')', 'g'), function(str, entity) {
+    return String(txt).replace(new RegExp('(' + replacements.join('|') + ')', 'g'), function(str, entity) {
       return mappings[entity] || '';
     });
   };

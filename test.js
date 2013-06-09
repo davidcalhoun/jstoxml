@@ -533,6 +533,16 @@ var jstoxml = require('./jstoxml.js');
     },
     expectedOutput: '<foo>true</foo><bar></bar><foo2>false</foo2><ok>This is ok</ok><ok2>false</ok2><ok3>true</ok3>'
   });
+
+  addTest({
+    name: 'bug4',
+    input: function(){
+      return jstoxml.toXML({
+        foo: 4
+      });
+    },
+    expectedOutput: '<foo>true</foo><bar></bar><foo2>false</foo2><ok>This is ok</ok><ok2>false</ok2><ok3>true</ok3>'
+  });  
   
   runTests();
   showReport();
