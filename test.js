@@ -25,8 +25,8 @@ var jstoxml = require('./jstoxml.js');
       results.testsRun++;
       
       if(output !== test.expectedOutput){
-        console.log(output + '\n!==\n\n' + test.expectedOutput);
-        console.log(test.name + ' failed.  ' + results.testsRun + '/' + tests.length);
+        console.log('OUTPUT:\n' + output + '\n\nEXPECTED OUTPUT:\n' + test.expectedOutput);
+        console.log(test.name + ' \033[1;31mFAILED\033[0m\n  ' + results.testsRun + '/' + tests.length);
         results.fail++;
       } else {
         console.log(test.name + ' passed.  ' + results.testsRun + '/' + tests.length);
@@ -557,13 +557,13 @@ var jstoxml = require('./jstoxml.js');
         }
       });
     },
-    expectedOutput: 'TESTINGTEMPORARY<foo>&amp;</foo>'
+    expectedOutput: '<foo>&amp;</foo>'
   });   
   
   runTests();
   showReport();
 
-  // exit with 1 to signal a failed build
+  // Exit with 1 to signal a failed build
   if(results.fail > 0) {
     process.exit(1);
   }
