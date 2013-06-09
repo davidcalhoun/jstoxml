@@ -562,5 +562,10 @@ var jstoxml = require('./jstoxml.js');
   
   runTests();
   showReport();
+
+  // exit with 1 to signal a failed build
+  if(results.fail > 0) {
+    process.exit(1);
+  }
   
 })();
