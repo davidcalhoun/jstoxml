@@ -557,7 +557,7 @@ var jstoxml = require('./jstoxml.js');
         }
       });
     },
-    expectedOutput: '<foo>&amp;</foo>'
+    expectedOutput: 'TESTINGTEMPORARY<foo>&amp;</foo>'
   });   
   
   runTests();
