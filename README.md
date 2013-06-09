@@ -1,9 +1,9 @@
 jstoxml
 =========
 
-### Convert native JavaScript objects (JSON) to XML
+### Convert JavaScript objects (and JSON) to XML (for RSS, Podcasts, etc.)
 
-Everyone loves JSON, and the world is moving that direction, but we still need things outputted in XML!  Particularly for [RSS feeds](http://www.rssboard.org/rss-specification) and [Podcasts](http://www.apple.com/itunes/podcasts/specs.html).
+Everyone loves JSON, and more and more folks want to move that direction, but we still need things outputted in XML!  Particularly for [RSS feeds](http://www.rssboard.org/rss-specification) and [Podcasts](http://www.apple.com/itunes/podcasts/specs.html).
 
 This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml), which was found to be a bit too rough around the edges.  jstoxml attempts to fix that by being more flexible.
 
