@@ -10,7 +10,7 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 ### Features
 * supports a variety of inputs: objects, arrays, strings, 
 * tabbed output (optional)
-* custom filters (<code>&</code> -> <code>&amp;</code>, etc) (optional)
+* custom filters (```&``` -> ```&amp;```, etc) (optional)
 
 ### Installation
 * npm install jstoxml
