@@ -2,7 +2,7 @@ var toXML = function(obj, config){
   // include XML header
   config = config || {};
   var out = config.header ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
-  
+
   var origIndent = config.indent || '';
   indent = '';
 
@@ -18,12 +18,19 @@ var toXML = function(obj, config){
       return mappings[entity] || '';
     });
   };
-  
+
   // helper function to push a new line to the output
   var push = function(string){
     out += string + (origIndent ? '\n' : '');
   };
-  
+
+  // helper function to escape special characters in xml
+  var escapeToken = function(string){
+    if(!typeof(string) == 'string')
+      return ''
+    return string.replace(/&/g, '&amp;').replace(/"/g, '&quote;').replace(/'/g, '&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
   /* create a tag and add it to the output
      Example:
      outputTag({
@@ -41,25 +48,25 @@ var toXML = function(obj, config){
     var attrsString = '';
     var outputString = '';
     var attrs = tag.attrs || '';
-    
+
     // turn the attributes object into a string with key="value" pairs
     for(var attr in attrs){
       if(attrs.hasOwnProperty(attr)) {
-        attrsString += ' ' + attr + '="' + attrs[attr] + '"';
+        attrsString += ' ' + escapeToken(attr) + '="' + escapeToken(attrs[attr]) + '"';
       }
     }
-    
+
     // assemble the tag
     outputString += (tag.indent || '') + '<' + (tag.closeTag ? '/' : '') + tag.name + (!tag.closeTag ? attrsString : '') + (tag.selfCloseTag ? '/' : '') + '>';
-    
+
     // if the tag only contains a text string, output it and close the tag
     if(tag.text || tag.text === ''){
       outputString += filter(tag.text) + '</' + tag.name + '>';
     }
-    
+
     push(outputString);
   };
-  
+
   // custom-tailored iterator for input arrays/objects (NOT a general purpose iterator)
   var every = function(obj, fn, indent){
     // array
@@ -68,16 +75,16 @@ var toXML = function(obj, config){
         fn(elt, indent);
         return true;            // continue to iterate
       });
-      
+
       return;
     }
-    
+
     // object with tag name
     if(obj._name){
       fn(obj, indent);
       return;
     }
-    
+
     // iterable object
     for(var key in obj){
       var type = typeof obj[key];
@@ -96,14 +103,14 @@ var toXML = function(obj, config){
       }
     }
   };
-  
+
   var convert = function convert(input, indent){
     var type = typeof input;
-    
+
     if(!indent) indent = '';
-    
+
     if(Array.isArray(input)) type = 'array';
-    
+
     var path = {
       'string': function(){
         push(indent + filter(input));
@@ -112,31 +119,31 @@ var toXML = function(obj, config){
       'boolean': function(){
         push(indent + (input ? 'true' : 'false'));
       },
-      
+
       'number': function(){
         push(indent + input);
       },
-      
+
       'array': function(){
         every(input, convert, indent);
       },
-      
+
       'function': function(){
         push(indent + input());
       },
-      
+
       'object': function(){
         if(!input._name){
           every(input, convert, indent);
           return;
         }
-        
+
         var outputTagObj = {
           name: input._name,
           indent: indent,
           attrs: input._attrs
         };
-        
+
         var type = typeof input._content;
 
         if(type === 'undefined'){
@@ -144,7 +151,7 @@ var toXML = function(obj, config){
           outputTag(outputTagObj);
           return;
         }
-        
+
         var objContents = {
           'string': function(){
             outputTagObj.text = input._content;
@@ -155,37 +162,37 @@ var toXML = function(obj, config){
             outputTagObj.text = (input._content ? 'true' : 'false');
             outputTag(outputTagObj);
           },
-          
+
           'number': function(){
             outputTagObj.text = input._content.toString();
             outputTag(outputTagObj);
           },
-          
+
           'object': function(){  // or Array
             outputTag(outputTagObj);
-            
+
             every(input._content, convert, indent + origIndent);
-            
+
             outputTagObj.closeTag = true;
             outputTag(outputTagObj);
           },
-          
+
           'function': function(){
             outputTagObj.text = input._content();  // () to execute the fn
             outputTag(outputTagObj);
           }
         };
-        
+
         if(objContents[type]) objContents[type]();
       }
-      
+
     };
-    
+
     if(path[type]) path[type]();
   };
-  
+
   convert(obj, indent);
-  
+
   return out;
 };
 
