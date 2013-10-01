@@ -1,14 +1,12 @@
-var toXML = function(obj, config){
-  // include XML header
-  config = config || {};
-  var out = config.header ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
-  
-  var origIndent = config.indent || '';
-  indent = '';
+var buildFilter = function(filterConfig) {
+  if ( !filterConfig ) {
+    return function passthroughFilter(txt) {
+      return txt;
+    };
+  }
 
-  var filter = function customFilter(txt) {
-    if(!config.filter) return txt;
-    var mappings = config.filter;
+  return function customFilter(txt) {
+    var mappings = filterConfig;
     var replacements = [];
     for(var map in mappings) {
       if(!mappings.hasOwnProperty(map)) continue;
@@ -18,6 +16,19 @@ var toXML = function(obj, config){
       return mappings[entity] || '';
     });
   };
+};
+
+
+var toXML = function(obj, config){
+  // include XML header
+  config = config || {};
+  var out = config.header ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
+  
+  var origIndent = config.indent || '';
+  indent = '';
+
+  var filter = buildFilter(config.filter);
+  var attributesFilter = buildFilter(config.attributesFilter);
   
   // helper function to push a new line to the output
   var push = function(string){
@@ -45,7 +56,7 @@ var toXML = function(obj, config){
     // turn the attributes object into a string with key="value" pairs
     for(var attr in attrs){
       if(attrs.hasOwnProperty(attr)) {
-        attrsString += ' ' + attr + '="' + attrs[attr] + '"';
+        attrsString += ' ' + attr + '="' + attributesFilter(attrs[attr]) + '"';
       }
     }
     

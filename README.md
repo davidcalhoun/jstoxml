@@ -464,8 +464,32 @@ Output:
 <foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>
 ```
 
+#### Example 12: Custom filter for XML attributes, or whatever
 
-#### Example 12: Empty tags
+```javascript
+jstoxml.toXML({
+    foo: '<a>',
+    bar: '"b"',
+    baz: '\'&whee\''
+},
+{
+    attributesFilter: {
+        '<': '&lt;', 
+        '>': '&gt;',
+        '"': '&quot;',
+        '\'': '&apos;',
+        '&': '&amp;'
+    }
+});
+```
+
+Output:
+
+```
+<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>
+```
+
+#### Example 13: Empty tags
 
 ```javascript
 jstoxml.toXML({
