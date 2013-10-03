@@ -558,7 +558,58 @@ var jstoxml = require('./jstoxml.js');
       });
     },
     expectedOutput: '<foo>&amp;</foo>'
-  });   
+  });
+
+  addTest({
+    name: 'serializationOfNullAttributesWhenNoConfig',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _attrs: {
+          attr1: 'v1',
+          attr2: null
+        },
+        _content: 'bar'
+      });
+    },
+    expectedOutput: '<foo attr1="v1" attr2="null">bar</foo>'
+  });
+
+  addTest({
+    name: 'noSerializationOfNullAttributesWhenConfigIsTrue',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _attrs: {
+          attr1: 'v1',
+          attr2: null
+        },
+        _content: 'bar'
+      },
+      {
+        ignoreNullAttrs: true
+      });
+    },
+    expectedOutput: '<foo attr1="v1">bar</foo>'
+  });
+
+  addTest({
+    name: 'serializationOfNullAttributesWhenConfigIsFalse',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _attrs: {
+          attr1: 'v1',
+          attr2: null
+        },
+        _content: 'bar'
+      },
+      {
+        ignoreNullAttrs: false
+      });
+    },
+    expectedOutput: '<foo attr1="v1" attr2="null">bar</foo>'
+  });
   
   runTests();
   showReport();
