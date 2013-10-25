@@ -170,13 +170,13 @@ var jstoxml = require('./jstoxml.js');
       return jstoxml.toXML({
         'blah': null,
         foo: 'bar',
-        'more blah': null,
+        'moreblah': null,
         bar: 0,
-        'more more blah': null,
+        'moremoreblah': null,
         baz: false
       });
     },
-    expectedOutput: 'blah<foo>bar</foo>more blah<bar>0</bar>more more blah<baz>false</baz>'
+    expectedOutput: '<blah></blah><foo>bar</foo><moreblah></moreblah><bar>0</bar><moremoreblah></moremoreblah><baz>false</baz>'
   });
   
   addTest({
@@ -306,7 +306,7 @@ var jstoxml = require('./jstoxml.js');
         'text2': null
       });
     },
-    expectedOutput: 'text1<foo>bar</foo>text2'
+    expectedOutput: '<text1></text1><foo>bar</foo><text2></text2>'
   });
   
   addTest({
@@ -558,8 +558,54 @@ var jstoxml = require('./jstoxml.js');
       });
     },
     expectedOutput: '<foo>&amp;</foo>'
-  });   
-  
+  });
+
+  addTest({
+    name: 'emptyContent',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _content: ''
+      },
+      {
+        ignoreNullAttrs: false
+      });
+    },
+    expectedOutput: '<foo></foo>'
+  });
+
+  addTest({
+    name: 'emptyProperty',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _content: {
+          sub: ''
+        }
+      },
+      {
+        ignoreNullAttrs: false
+      });
+    },
+    expectedOutput: '<foo><sub></sub></foo>'
+  });
+
+  addTest({
+    name: 'nullProperty',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _content: {
+          sub: null
+        }
+      },
+      {
+        ignoreNullAttrs: false
+      });
+    },
+    expectedOutput: '<foo><sub></sub></foo>'
+  });
+
   runTests();
   showReport();
 

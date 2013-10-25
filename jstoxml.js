@@ -85,13 +85,12 @@ var toXML = function(obj, config){
       if(obj.hasOwnProperty(key) && (obj[key] || type === 'boolean' || type === 'number')){
         fn({_name: key, _content: obj[key]}, indent);
       //} else if(!obj[key]) {   // null value (foo:'')
-      } else if(obj.hasOwnProperty(key) && obj[key] === null) {   // null value (foo:null)
-        fn(key, indent);       // output the keyname as a string ('foo')
-      } else if(obj.hasOwnProperty(key) && obj[key] === '') {
-        // blank string
+      } else if(obj.hasOwnProperty(key) && (obj[key] === null || obj[key] === '')) {
+        // blank string or null value
         outputTag({
           name: key,
-          text: ''
+          text: '',
+          indent: indent
         });
       }
     }
