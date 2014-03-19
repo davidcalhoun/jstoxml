@@ -170,13 +170,13 @@ var toXML = function(obj, config){
           },
           
           'object': function(){  // or Array
-            if (!Array.isArray(obj[outputTagObj.name])) {
+            if (!Array.isArray(input._content)) {
               outputTag(outputTagObj);
             }
             
             every(input._content, convert, indent + origIndent,$.extend(true,{},outputTagObj));
             
-            if (!Array.isArray(obj[outputTagObj.name])) {
+            if (!Array.isArray(input._content)) {
               outputTagObj.closeTag = true;
               outputTag(outputTagObj);
             }
