@@ -250,6 +250,30 @@ var jstoxml = require('./jstoxml.js');
   });
   
   addTest({
+    name: 'attributes-entities',
+    input: function(){
+      return jstoxml.toXML({
+        _name: 'foo',
+        _content: 'bar',
+        _attrs: {
+          a: 'http://example.com/?test=\'1\'&foo=<bar>&whee="sha"',
+          b: 'http://example2.com/?test=\'2\'&md=<5>&sum="sha"',
+        }
+      },
+      {
+        attributesFilter: {
+          '<': '&lt;', 
+          '>': '&gt;',
+          '"': '&quot;',
+          '\'': '&apos;',
+          '&': '&amp;'
+        }
+      });
+    },
+    expectedOutput: '<foo a="http://example.com/?test=&apos;1&apos;&amp;foo=&lt;bar&gt;&amp;whee=&quot;sha&quot;" b="http://example2.com/?test=&apos;2&apos;&amp;md=&lt;5&gt;&amp;sum=&quot;sha&quot;">bar</foo>'
+  });
+  
+  addTest({
     name: 'example1-simple-object',
     input: function(){
       return jstoxml.toXML({
