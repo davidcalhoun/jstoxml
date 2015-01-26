@@ -1,13 +1,15 @@
 {
-	"name": "jstoxml",
-	"version": "0.2.2",
-	"description": "Convert JSON to XML (for RSS, Podcasts, etc.)",
-	"homepage": "http://github.com/davidcalhoun/jstoxml",
-	"main": "./jstoxml.js",
-	"author": "David Calhoun <david.b.calhoun@gmail.com>",
-	"repository": "git://github.com/davidcalhoun/jstoxml",
-	"engines": {"node":">=0.2.0"},
-	"scripts": {
-		"test": "node test.js"
-	}
+  "name": "jstoxml",
+  "version": "0.2.3",
+  "description": "Convert JSON to XML (for RSS, Podcasts, etc.)",
+  "homepage": "http://github.com/davidcalhoun/jstoxml",
+  "main": "./jstoxml.js",
+  "author": "David Calhoun <david.b.calhoun@gmail.com>",
+  "repository": "git://github.com/davidcalhoun/jstoxml",
+  "engines": {
+    "node": ">=0.2.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  }
 }
