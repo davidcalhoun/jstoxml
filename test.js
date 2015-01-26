@@ -559,6 +559,45 @@ var jstoxml = require('./jstoxml.js');
     },
     expectedOutput: '<foo>&amp;</foo>'
   });   
+
+  addTest({
+    name: 'headerNone',
+    input: function(){
+      return jstoxml.toXML({
+        foo: 4
+      },
+      {
+        header: false
+      });
+    },
+    expectedOutput: '<foo>4</foo>'
+  });
+
+  addTest({
+    name: 'headerDefault',
+    input: function(){
+      return jstoxml.toXML({
+        foo: 4
+      },
+      {
+        header: true
+      });
+    },
+    expectedOutput: '<?xml version="1.0" encoding="UTF-8"?>\n<foo>4</foo>'
+  });
+
+  addTest({
+    name: 'headerCustom',
+    input: function(){
+      return jstoxml.toXML({
+        foo: 4
+      },
+      {
+        header: '<Hooray For Captain Spaulding, the African Explorer>\n'
+      });
+    },
+    expectedOutput: '<Hooray For Captain Spaulding, the African Explorer>\n<foo>4</foo>'
+  });
   
   runTests();
   showReport();

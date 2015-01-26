@@ -1,7 +1,14 @@
 var toXML = function(obj, config){
   // include XML header
   config = config || {};
-  var out = config.header ? '<?xml version="1.0" encoding="UTF-8"?>\n' : '';
+  var out = '';
+  if(config.header) {
+    if(typeof config.header == 'string') {
+      out = config.header;
+    } else {
+      out = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    }
+  }
   
   var origIndent = config.indent || '';
   indent = '';
