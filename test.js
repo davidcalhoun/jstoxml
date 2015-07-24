@@ -598,6 +598,39 @@ var jstoxml = require('./jstoxml.js');
     },
     expectedOutput: '<Hooray For Captain Spaulding, the African Explorer>\n<foo>4</foo>'
   });
+
+  addTest({
+    name: 'nested-elements-with-self-closing-sibling',
+    input: function(){
+      return jstoxml.toXML({
+        people: {
+          students: [
+            {
+              student: { name: 'Joe' }
+            },
+            {
+              student: { name: 'Jane' }
+            }
+          ],
+          teacher: {
+            _selfCloseTag: true,
+            _attrs: {
+              'name': 'Yoda'
+            }
+          }
+        }
+      });
+    },
+    expectedOutput: [
+      '<people>',
+      '<students>',
+      '<student><name>Joe</name></student>',
+      '<student><name>Jane</name></student>',
+      '</students>',
+      '<teacher name="Yoda"/>',
+      '</people>'
+    ].join('')
+  });
   
   runTests();
   showReport();
