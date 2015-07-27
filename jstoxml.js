@@ -55,7 +55,7 @@ var toXML = function(obj, config){
         attrsString += ' ' + attr + '="' + attrs[attr] + '"';
       }
     }
-    
+
     // assemble the tag
     outputString += (tag.indent || '') + '<' + (tag.closeTag ? '/' : '') + tag.name + (!tag.closeTag ? attrsString : '') + (tag.selfCloseTag ? '/' : '') + '>';
     
@@ -146,7 +146,10 @@ var toXML = function(obj, config){
         
         var type = typeof input._content;
 
-        if(type === 'undefined'){
+        if(type === 'undefined' || input._content._selfCloseTag === true){
+          if (input._content && input._content._attrs) {
+            outputTagObj.attrs = input._content._attrs;
+          }
           outputTagObj.selfCloseTag = true;
           outputTag(outputTagObj);
           return;
