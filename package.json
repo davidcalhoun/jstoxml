@@ -3,6 +3,14 @@
   "version": "0.2.3",
   "description": "Convert JSON to XML (for RSS, Podcasts, etc.)",
   "homepage": "http://github.com/davidcalhoun/jstoxml",
+  "keywords": [
+    "xml",
+    "json",
+    "rss",
+    "podcast",
+    "sitemap",
+    "site map"
+  ],
   "main": "./jstoxml.js",
   "author": "David Calhoun <david.b.calhoun@gmail.com>",
   "repository": "git://github.com/davidcalhoun/jstoxml",
