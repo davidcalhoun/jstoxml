@@ -11,7 +11,7 @@ var toXML = function(obj, config){
   }
   
   var origIndent = config.indent || '';
-  indent = '';
+  var indent = '';
 
   var filter = function customFilter(txt) {
     if(!config.filter) return txt;
