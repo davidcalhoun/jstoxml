@@ -1,6 +1,7 @@
 jstoxml
 =========
 [![Build Status](https://travis-ci.org/davidcalhoun/jstoxml.svg?branch=master)](https://travis-ci.org/davidcalhoun/jstoxml)
+[![Downloads][downloads-image]][npm-url]
 
 ### Convert JavaScript objects (and JSON) to XML (for RSS, Podcasts, etc.)
 
@@ -480,3 +481,7 @@ Output:
 ```
 <foo></foo><bar>whee</bar>
 ```
+
+[downloads-image]: https://img.shields.io/npm/dt/jstoxml.svg
+[npm-url]: https://www.npmjs.com/package/jstoxml
+[npm-image]: https://img.shields.io/npm/v/jstoxml.svg
