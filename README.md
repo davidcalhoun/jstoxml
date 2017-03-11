@@ -484,4 +484,5 @@ Output:
 
 [downloads-image]: https://img.shields.io/npm/dt/jstoxml.svg
 [npm-url]: https://www.npmjs.com/package/jstoxml
-[npm-image]: https://img.shields.io/npm/v/jstoxml.svg
+[npm-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat
+
