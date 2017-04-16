@@ -68,11 +68,19 @@ var toXML = function(obj, config){
   };
   
   // custom-tailored iterator for input arrays/objects (NOT a general purpose iterator)
-  var every = function(obj, fn, indent){
+  var every = function(obj, fn, indent, outputTagObj){
     // array
     if(Array.isArray(obj)){
       obj.every(function(elt){  // for each element in the array
-        fn(elt, indent);
+        if (outputTagObj) {
+          outputTagObj.closeTag=false;
+          outputTag(outputTagObj);
+          fn(elt, indent);
+          outputTagObj.closeTag=true;
+          outputTag(outputTagObj);
+        } else {
+          fn(elt, indent);
+        }
         return true;            // continue to iterate
       });
       
@@ -172,12 +180,16 @@ var toXML = function(obj, config){
           },
           
           'object': function(){  // or Array
-            outputTag(outputTagObj);
+            if (!Array.isArray(input._content)) {
+              outputTag(outputTagObj);
+            }
             
-            every(input._content, convert, indent + origIndent);
+            every(input._content, convert, indent + origIndent,$.extend(true,{},outputTagObj));
             
-            outputTagObj.closeTag = true;
-            outputTag(outputTagObj);
+            if (!Array.isArray(input._content)) {
+              outputTagObj.closeTag = true;
+              outputTag(outputTagObj);
+            }
           },
           
           'function': function(){
