@@ -52,7 +52,7 @@ var toXML = function(obj, config){
     // turn the attributes object into a string with key="value" pairs
     for(var attr in attrs){
       if(attrs.hasOwnProperty(attr)) {
-        attrsString += ' ' + attr + '="' + attrs[attr] + '"';
+        attrsString += ' ' + attr + '="' + filter(attrs[attr]) + '"';
       }
     }
 
