@@ -61,7 +61,11 @@ var toXML = function(obj, config){
     
     // if the tag only contains a text string, output it and close the tag
     if(tag.text || tag.text === ''){
-      outputString += filter(tag.text) + '</' + tag.name + '>';
+      outputString += filter(tag.text).replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;') + '</' + tag.name + '>';
     }
     
     push(outputString);
