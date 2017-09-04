@@ -181,7 +181,12 @@ var toXML = function(obj, config){
           },
           
           'function': function(){
-            outputTagObj.text = input._content();  // () to execute the fn
+            outputTag(outputTagObj);
+
+            var functionResult = input._content();
+            convert(functionResult, indent + origIndent);
+
+            outputTagObj.closeTag = true;
             outputTag(outputTagObj);
           }
         };
