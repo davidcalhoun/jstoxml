@@ -18,12 +18,12 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 * npm install jstoxml
 
 ### Version 1.0.0
--Complete rewrite!  The code should now be easier to understand and maintain.
--now supports emoji/UTF8 tag attributes (needed for AMP pages - e.g. `<html ⚡ lang="en">`) (see example 14)
--now supports duplicate attribute key names (see example 15)
--Fixed: functions returning objects now have now that output passed through toXML for XML conversion
--Fixed: empty text strings now properly output self-closing tags
--Migrated tests to mocha
+* Complete rewrite!  The code should now be easier to understand and maintain.
+* now supports emoji/UTF8 tag attributes (needed for AMP pages - e.g. `<html ⚡ lang="en">`) (see example 14)
+* now supports duplicate attribute key names (see example 15)
+* Fixed: functions returning objects now have now that output passed through toXML for XML conversion
+* Fixed: empty text strings now properly output self-closing tags
+* Migrated tests to mocha
 
 ### Version 0.2.1
 * IMPORTANT: empty text strings will now output as empty XML tags (NOT text content), which makes more sense and is more intuitive (see issue #3).  To output text content, set the value to null instead (see Example 5 below).
