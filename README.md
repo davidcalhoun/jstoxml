@@ -9,11 +9,6 @@ Everyone loves JSON, and more and more folks want to move that direction, but we
 
 This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml), which was found to be a bit too rough around the edges.  jstoxml attempts to fix that by being more flexible.
 
-### Features
-* supports a variety of inputs: objects, arrays, strings, 
-* tabbed output (optional)
-* custom filters (`&` -> `&amp;`, etc) (optional)
-
 ### Installation
 * npm install jstoxml
 
@@ -25,47 +20,12 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 * Fixed: empty text strings now properly output self-closing tags
 * Migrated tests to mocha
 
-### Version 0.2.1
-* IMPORTANT: empty text strings will now output as empty XML tags (NOT text content), which makes more sense and is more intuitive (see issue #3).  To output text content, set the value to null instead (see Example 5 below).
-
-For instance:
-```
-jstoxml.toXML({
-  a: '1',
-  foo: '',
-  b: '2'
-});
-// Output: <a>1</a><foo></foo><b>2</b>
-```
-
-```
-jstoxml.toXML({
-  a: '1',
-  foo: null,
-  b: '2'
-});
-// Output: <a>1</a>foo<b>2</b>
-```
-
-### Version 0.1.0
-* Added support for custom filters (for XML, UTF-8 entities, or whatever you need it for)
-* Changed to a single options object, passed as the second parameter.  This will break older versions that use the XML header or indentation!  They will need to be updated (see the examples below).
-
-
 ### Examples
 First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
 
 ```javascript
 var jstoxml = require('jstoxml');
 ```
-
-#### Interface
-jstoxml has a very simple interface: jstoxml.toXML(input, addHeader [Boolean or String], indent [String]);
-
-* input: accepts objects, arrays, strings, and even functions
-* addHeader (optional): pass in true to include the default XML header (&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;).  For a custom XML header, pass in a string.
-* indent (optional): string which is used as an indent (i.e. '  ')
-
 
 #### Example 1: Simple object
 ```javascript
@@ -541,7 +501,7 @@ jstoxml.toXML({
 Output:
 
 ```
-<html lang="sen" lang="klingon"/>
+<html lang="en" lang="klingon"/>
 ```
 
 ### License
