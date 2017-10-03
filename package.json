@@ -19,8 +19,7 @@
   "repository": "git://github.com/davidcalhoun/jstoxml",
   "scripts": {
     "postinstall": "./install.sh",
-    "test": "./node_modules/mocha/bin/mocha test.js",
-    "test-dist": "./node_modules/mocha/bin/mocha dist/jstoxml.js"
+    "test": "./node_modules/mocha/bin/mocha test.js"
   },
   "dependencies": {},
   "devDependencies": {
