@@ -1,202 +1,299 @@
-var toXML = function(obj, config){
-  // include XML header
-  config = config || {};
-  var out = '';
-  if(config.header) {
-    if(typeof config.header == 'string') {
-      out = config.header;
-    } else {
-      out = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    }
+const privateVars = ['_selfCloseTag', '_attrs'];
+const privateVarsJoined = privateVars.join('|');
+const privateVarsRegexp = new RegExp(privateVarsJoined, 'g');
+
+/**
+ * Determines the indent string based on current tree depth.
+ */
+const getIndentStr = (baseIndentStr = '', depth = 0) => baseIndentStr.repeat(depth);
+
+/**
+ * Sugar function supplementing JS's quirky typeof operator, plus some extra help to detect
+ * "special objects" expected by jstoxml.
+ */
+const getType = val => {
+  let type;
+  if (Array.isArray(val)) {
+    type = 'array';
+  } else if (typeof val === 'object' && val !== null && val._name) {
+    type = 'special-object';
+  } else if (val instanceof Date) {
+    type = 'date';
+  } else if (val === null) {
+    type = 'null';
+  } else {
+    type = typeof val;
   }
-  
-  var origIndent = config.indent || '';
-  var indent = '';
 
-  var filter = function customFilter(txt) {
-    if(!config.filter) return txt;
-    var mappings = config.filter;
-    var replacements = [];
-    for(var map in mappings) {
-      if(!mappings.hasOwnProperty(map)) continue;
-      replacements.push(map);
-    }
-    return String(txt).replace(new RegExp('(' + replacements.join('|') + ')', 'g'), function(str, entity) {
-      return mappings[entity] || '';
-    });
-  };
-  
-  // helper function to push a new line to the output
-  var push = function(string){
-    out += string + (origIndent ? '\n' : '');
-  };
-  
-  /* create a tag and add it to the output
-     Example:
-     outputTag({
-       name: 'myTag',      // creates a tag <myTag>
-       indent: '  ',       // indent string to prepend
-       closeTag: true,     // starts and closes a tag on the same line
-       selfCloseTag: true,
-       attrs: {            // attributes
-         foo: 'bar',       // results in <myTag foo="bar">
-         foo2: 'bar2'
-       }
-     });
-  */
-  var outputTag = function(tag){
-    var attrsString = '';
-    var outputString = '';
-    var attrs = tag.attrs || '';
-    
-    // turn the attributes object into a string with key="value" pairs
-    for(var attr in attrs){
-      if(attrs.hasOwnProperty(attr)) {
-        attrsString += ' ' + attr + '="' + attrs[attr] + '"';
-      }
-    }
-
-    // assemble the tag
-    outputString += (tag.indent || '') + '<' + (tag.closeTag ? '/' : '') + tag.name + (!tag.closeTag ? attrsString : '') + (tag.selfCloseTag ? '/' : '') + '>';
-    
-    // if the tag only contains a text string, output it and close the tag
-    if(tag.text || tag.text === ''){
-      outputString += filter(tag.text) + '</' + tag.name + '>';
-    }
-    
-    push(outputString);
-  };
-  
-  // custom-tailored iterator for input arrays/objects (NOT a general purpose iterator)
-  var every = function(obj, fn, indent){
-    // array
-    if(Array.isArray(obj)){
-      obj.every(function(elt){  // for each element in the array
-        fn(elt, indent);
-        return true;            // continue to iterate
-      });
-      
-      return;
-    }
-    
-    // object with tag name
-    if(obj._name){
-      fn(obj, indent);
-      return;
-    }
-    
-    // iterable object
-    for(var key in obj){
-      var type = typeof obj[key];
-
-      if(obj.hasOwnProperty(key) && (obj[key] || type === 'boolean' || type === 'number')){
-        fn({_name: key, _content: obj[key]}, indent);
-      //} else if(!obj[key]) {   // null value (foo:'')
-      } else if(obj.hasOwnProperty(key) && obj[key] === null) {   // null value (foo:null)
-        fn(key, indent);       // output the keyname as a string ('foo')
-      } else if(obj.hasOwnProperty(key) && obj[key] === '') {
-        // blank string
-        outputTag({
-          name: key,
-          text: ''
-        });
-      }
-    }
-  };
-  
-  var convert = function convert(input, indent){
-    var type = typeof input;
-    
-    if(!indent) indent = '';
-    
-    if(Array.isArray(input)) type = 'array';
-    
-    var path = {
-      'string': function(){
-        push(indent + filter(input));
-      },
-
-      'boolean': function(){
-        push(indent + (input ? 'true' : 'false'));
-      },
-      
-      'number': function(){
-        push(indent + input);
-      },
-      
-      'array': function(){
-        every(input, convert, indent);
-      },
-      
-      'function': function(){
-        push(indent + input());
-      },
-      
-      'object': function(){
-        if(!input._name){
-          every(input, convert, indent);
-          return;
-        }
-        
-        var outputTagObj = {
-          name: input._name,
-          indent: indent,
-          attrs: input._attrs
-        };
-        
-        var type = typeof input._content;
-
-        if(type === 'undefined' || input._content._selfCloseTag === true){
-          if (input._content && input._content._attrs) {
-            outputTagObj.attrs = input._content._attrs;
-          }
-          outputTagObj.selfCloseTag = true;
-          outputTag(outputTagObj);
-          return;
-        }
-        
-        var objContents = {
-          'string': function(){
-            outputTagObj.text = input._content;
-            outputTag(outputTagObj);
-          },
-
-          'boolean': function(){
-            outputTagObj.text = (input._content ? 'true' : 'false');
-            outputTag(outputTagObj);
-          },
-          
-          'number': function(){
-            outputTagObj.text = input._content.toString();
-            outputTag(outputTagObj);
-          },
-          
-          'object': function(){  // or Array
-            outputTag(outputTagObj);
-            
-            every(input._content, convert, indent + origIndent);
-            
-            outputTagObj.closeTag = true;
-            outputTag(outputTagObj);
-          },
-          
-          'function': function(){
-            outputTagObj.text = input._content();  // () to execute the fn
-            outputTag(outputTagObj);
-          }
-        };
-        
-        if(objContents[type]) objContents[type]();
-      }
-      
-    };
-    
-    if(path[type]) path[type]();
-  };
-  
-  convert(obj, indent);
-  
-  return out;
+  return type;
 };
 
-exports.toXML = toXML;
+/**
+ * Maps an object or array of arribute keyval pairs to a string.
+ * Examples:
+ * { foo: 'bar', baz: 'g' } -> 'foo="bar" baz="g"'
+ * [ { key: '⚡', val: true }, { foo: 'bar' } ] -> '⚡ foo="bar"'
+ */
+const getAttributeKeyVals = (attributes = {}) => {
+  const isArray = Array.isArray(attributes);
+
+  let keyVals = [];
+  if (isArray) {
+    // Array containing complex objects and potentially duplicate attributes.
+    keyVals = attributes.map(attr => {
+      const key = Object.keys(attr)[0];
+      const val = attr[key];
+
+      const valStr = (val === true) ? '' : `="${val}"`;
+      return `${key}${valStr}`;
+    });
+  } else {
+    const keys = Object.keys(attributes);
+    keyVals = keys.map(key => {
+      // Simple object - keyval pairs.
+
+      // For boolean true, simply output the key.
+      const valStr = (attributes[key] === true) ? '' : `="${attributes[key]}"`;
+
+      return `${key}${valStr}`;
+    });
+  }
+
+  return keyVals;
+};
+
+/**
+ * Converts an attributes object to a string of keyval pairs.
+ * Example:
+ * formatAttributes({ a: 1, b: 2 })
+ * -> 'a="1" b="2"'
+ */
+const formatAttributes = (attributes = {}) => {
+  const keyVals = getAttributeKeyVals(attributes);
+  if (keyVals.length === 0) return '';
+
+  const keysValsJoined = keyVals.join(' ');
+  return ` ${keysValsJoined}`;
+};
+
+/**
+ * Replaces matching values in a string with a new value.
+ * Example:
+ * filterStr('foo&bar', { '&': '&amp;' });
+ */
+const filterStr = (inputStr = '', filter = {}) => {
+  const searches = Object.keys(filter);
+  const joinedSearches = searches.join('|');
+  const regexpStr = `(${joinedSearches})`;
+  const regexp = new RegExp(regexpStr, 'g');
+
+  return String(inputStr).replace(regexp, (str, entity) => filter[entity] || '');
+};
+
+/**
+ * Converts an object to a jstoxml array.
+ * Example:
+ * objToArray({ foo: 'bar', baz: 2 });
+ * ->
+ * [
+ *   {
+ *     _name: 'foo',
+ *     _content: 'bar'
+ *   },
+ *   {
+ *     _name: 'baz',
+ *     _content: 2
+ *   }
+ * ]
+ */
+const objToArray = (obj = {}) => (Object.keys(obj).map(key => ({
+  _name: key,
+  _content: obj[key]
+})));
+
+/**
+ * Determines if a value is a simple primitive type that can fit onto one line.  Needed for
+ * determining any needed indenting and line breaks.
+ */
+const isSimpleType = val => {
+  const valType = getType(val);
+  return (valType === 'string' || valType === 'number' || valType === 'boolean' ||
+    valType === 'date' || valType === 'special-object');
+};
+
+/**
+ * Determines if an XML string is a simple primitive, or contains nested data.
+ */
+const isSimpleXML = xmlStr => !xmlStr.match('<');
+
+/**
+ * Assembles an XML header as defined by the config.
+ */
+const defaultHeader = '<?xml version="1.0" encoding="UTF-8"?>';
+const getHeaderString = (config, depth, isOutputStart) => {
+  let headerStr = '';
+  const shouldOutputHeader = config.header && isOutputStart;
+  if (shouldOutputHeader) {
+    const shouldUseDefaultHeader = typeof config.header === 'boolean';
+    headerStr = (shouldUseDefaultHeader) ? defaultHeader : config.header;
+
+    if (config.indent) headerStr += '\n';
+  }
+
+  return headerStr;
+};
+
+/**
+ * Recursively traverses an object tree and converts the output to an XML string.
+ */
+export const toXML = (obj = {}, config = {}) => {
+  // Determine tree depth.
+  const depth = (config.depth) ? config.depth : 0;
+
+  // Determine indent string based on depth.
+  const indentStr = getIndentStr(config.indent, depth);
+
+  // For branching based on value type.
+  const valType = getType(obj);
+  const isSimple = isSimpleType(obj);
+
+  // Determine if this is the start of the output.  Needed for header and indenting.
+  const isOutputStart = depth === 0 && (isSimple || (!isSimple && config._isFirstItem));
+
+  let outputStr = '';
+  switch (valType) {
+  case 'special-object': {
+    // Processes a specially-formatted object used by jstoxml.
+
+    const { _name, _content } = obj;
+
+    // Output text content without a tag wrapper.
+    if (_content === null) {
+      outputStr = _name;
+      break;
+    }
+
+    // Don't output private vars (such as _attrs).
+    if (_name.match(privateVarsRegexp)) break;
+
+    // Process the nested new value and config.
+    const newConfig = Object.assign({}, config, { depth: depth + 1 });
+    const newVal = toXML(_content, newConfig);
+    const newValType = getType(newVal);
+    const isNewValSimple = isSimpleXML(newVal);
+
+    // Pre-tag output (indent and line breaks).
+    const preIndentStr = (config.indent && !isOutputStart) ? '\n' : '';
+    const preTag = `${preIndentStr}${indentStr}`;
+
+    // Tag output.
+    const valIsEmpty = newValType === 'undefined' || newVal === '';
+    const shouldSelfClose = (typeof obj._selfCloseTag === 'boolean') ?
+      (valIsEmpty && obj._selfCloseTag) :
+      valIsEmpty;
+    const selfCloseStr = (shouldSelfClose) ? '/' : '';
+    const attributesString = formatAttributes(obj._attrs);
+    const tag = `<${_name}${attributesString}${selfCloseStr}>`;
+
+    // Post-tag output (closing tag, indent, line breaks).
+    const preTagCloseStr = (config.indent && !isNewValSimple) ? `\n${indentStr}` : '';
+    const postTag = (!shouldSelfClose) ? `${newVal}${preTagCloseStr}</${_name}>` : '';
+
+    outputStr = `${preTag}${tag}${postTag}`;
+    break;
+  }
+
+  case 'object': {
+    // Iterates over keyval pairs in an object, converting each item to a special-object.
+
+    const keys = Object.keys(obj);
+    const outputArr = keys.map((key, index) => {
+      const newConfig = Object.assign({}, config, {
+        _isFirstItem: index === 0,
+        _isLastItem: ((index + 1) === keys.length)
+      });
+
+      const outputObj = { _name: key };
+
+      if (getType(obj[key]) === 'object') {
+        // Sub-object contains an object.
+
+        // Move private vars up as needed.  Needed to support certain types of objects
+        // E.g. { foo: { _attrs: { a: 1 } } } -> <foo a="1"/>
+        privateVars.forEach(privateVar => {
+          const val = obj[key][privateVar];
+          if (typeof val !== 'undefined') {
+            outputObj[privateVar] = val;
+            delete obj[key][privateVar];
+          }
+        });
+
+        const hasContent = typeof obj[key]._content !== 'undefined';
+        if (hasContent) {
+          // _content has sibling keys, so pass as an array (edge case).
+          // E.g. { foo: 'bar', _content: { baz: 2 } } -> <foo>bar</foo><baz>2</baz>
+          if (Object.keys(obj[key]).length > 1) {
+            const newContentObj = Object.assign({}, obj[key]);
+            delete newContentObj._content;
+
+            outputObj._content = [
+              ...objToArray(newContentObj),
+              obj[key]._content
+            ];
+          }
+        }
+      }
+
+      // Fallthrough: just pass the key as the content for the new special-object.
+      if (typeof outputObj._content === 'undefined') outputObj._content = obj[key];
+
+      const xml = toXML(outputObj, newConfig);
+
+      return xml;
+    }, config);
+
+    outputStr = outputArr.join('');
+    break;
+  }
+
+  case 'function': {
+    // Executes a user-defined function and return output.
+
+    const fnResult = obj(config);
+
+    outputStr = toXML(fnResult, config);
+    break;
+  }
+
+  case 'array': {
+    // Iterates and converts each value in an array.
+
+    const outputArr = obj.map((singleVal, index) => {
+      const newConfig = Object.assign({}, config, {
+        _isFirstItem: index === 0,
+        _isLastItem: ((index + 1) === obj.length)
+      });
+      return toXML(singleVal, newConfig);
+    });
+
+    outputStr = outputArr.join('');
+    break;
+  }
+
+  case 'number':
+  case 'string':
+  case 'boolean':
+  case 'date':
+  case 'null':
+  default: {
+    outputStr = filterStr(obj, config.filter);
+    break;
+  }
+  }
+
+  const headerStr = getHeaderString(config, depth, isOutputStart);
+
+  outputStr = `${headerStr}${outputStr}`;
+
+  return outputStr;
+};

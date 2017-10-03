@@ -17,6 +17,14 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 ### Installation
 * npm install jstoxml
 
+### Version 1.0.0
+-Complete rewrite!  The code should now be easier to understand and maintain.
+-now supports emoji/UTF8 tag attributes (needed for AMP pages - e.g. `<html ⚡ lang="en">`) (see example 14)
+-now supports duplicate attribute key names (see example 15)
+-Fixed: functions returning objects now have now that output passed through toXML for XML conversion
+-Fixed: empty text strings now properly output self-closing tags
+-Migrated tests to mocha
+
 ### Version 0.2.1
 * IMPORTANT: empty text strings will now output as empty XML tags (NOT text content), which makes more sense and is more intuitive (see issue #3).  To output text content, set the value to null instead (see Example 5 below).
 
@@ -52,10 +60,10 @@ var jstoxml = require('jstoxml');
 ```
 
 #### Interface
-jstoxml has a very simple interface: jstoxml.toXML(input, addHeader [Boolean], indent [String]);
+jstoxml has a very simple interface: jstoxml.toXML(input, addHeader [Boolean or String], indent [String]);
 
 * input: accepts objects, arrays, strings, and even functions
-* addHeader (optional): pass in true to include the XML header (&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;)
+* addHeader (optional): pass in true to include the default XML header (&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;).  For a custom XML header, pass in a string.
 * indent (optional): string which is used as an indent (i.e. '  ')
 
 
@@ -72,24 +80,10 @@ Output:
 <foo>bar</foo><foo2>bar2</foo2>
 ```
 
-
-#### Example 2: Simple array
-```javascript
-jstoxml.toXML([
-  {foo: 'bar'},
-  {foo2: 'bar2'}
-]);
-```
-Output:
-
-```
-<foo>bar</foo><foo2>bar2</foo2>
-```
+Note: because JavaScript doesn't allow duplicate key names, only the last defined key will be outputted.  If you need duplicate keys, please use an array instead (see Example 2 below).
 
 
-#### Example 3: Duplicate tag names
-Because we can't have duplicate keys in objects, we have to take advantage of arrays to get duplicate tag names:
-
+#### Example 2: Simple array (needed for duplicate keys)
 ```javascript
 jstoxml.toXML([
   {foo: 'bar'},
@@ -102,8 +96,20 @@ Output:
 <foo>bar</foo><foo>bar2</foo>
 ```
 
+#### Example 3: Simple functions
+```javascript
+jstoxml.toXML({
+  currentTime: () => new Date()
+});
+```
+Output:
 
-#### Example 4: Attributes
+```
+<currentTime>Mon Oct 02 2017 09:34:54 GMT-0700 (PDT)</currentTime>
+```
+
+
+#### Example 4: XML tag attributes
 ```javascript
 jstoxml.toXML({
   _name: 'foo',
@@ -210,21 +216,22 @@ return jstoxml.toXML({
 ```
 
 
-#### Example 8: Functions
+#### Example 8: Complex functions
+Function outputs will be processed (fed back into toXML), meaning that you can output objects that will in turn be converted to XML.
+
 ```javascript
 jstoxml.toXML({
-  onePlusTwo: function(){
-    return 1 + 2;
-  },
-  date: function(){
-    return new Date();
+  someNestedXML: () => {
+    return {
+      foo: 'bar'
+    }
   }
 });
 ```
 Output:
 
 ```
-<onePlusTwo>3</onePlusTwo><date>Sat Jul 30 2011 17:49:52 GMT+0900 (JST)</date>
+<someNestedXML><foo>bar</foo></someNestedXML>
 ```
 
 #### Example 9: RSS Feed
@@ -467,12 +474,16 @@ Output:
 ```
 
 
-#### Example 12: Empty tags
+#### Example 12: Avoiding self-closing tags
+If for some reason you want to avoid self-closing tags, you can pass in a special config option `_selfCloseTag`:
 
 ```javascript
 jstoxml.toXML({
   foo: '',
-  bar: 'whee'
+  bar: undefined
+},
+{
+  _selfCloseTag: false
 });
 ```
 
@@ -481,6 +492,60 @@ Output:
 ```
 <foo></foo><bar>whee</bar>
 ```
+
+#### Example 13: Custom XML header
+
+```javascript
+jstoxml.toXML({
+  foo: 'bar'
+}, {header: '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'});
+```
+
+Output:
+
+```
+<?xml version="1.0" encoding="UTF-16" standalone="yes"?><foo>bar</foo><foo2>bar2</foo2>
+```
+
+#### Example 14: Emoji attribute support (needed for AMP)
+
+```javascript
+jstoxml.toXML({
+  html: {
+    _attrs: [
+      { key: '⚡', val: true }
+    ]
+  }
+});
+```
+
+Output:
+
+```
+<html ⚡/>
+```
+
+#### Example 15: Duplicate attribute key support
+
+```javascript
+jstoxml.toXML({
+  html: {
+    _attrs: [
+      { lang: 'en' },
+      { lang: 'klingon' }
+    ]
+  }
+});
+```
+
+Output:
+
+```
+<html lang="sen" lang="klingon"/>
+```
+
+### License
+MIT
 
 [downloads-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/jstoxml

@@ -1,0 +1,16 @@
+# OS generated files #
+######################
+.DS_Store
+
+
+# Etc #
+######################
+node_modules
+npm-debug.log
+yarn.lock
+yarn-error.log
+
+
+# Generated JS/CSS #
+######################
+dist
