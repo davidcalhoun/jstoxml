@@ -433,6 +433,30 @@ Output:
 <foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>
 ```
 
+#### Example 11b: Custom filter for XML attributes
+
+```javascript
+jstoxml.toXML({
+  _name: 'foo',
+  _attrs: { a: '<"\'&"foo>' }
+},
+{
+  attributesFilter: {
+    '<': '&lt;', 
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&apos;',
+    '&': '&amp;'
+  }
+});
+```
+
+Output:
+
+```
+<foo a="&lt;&quot;&apos;&amp;&quot;foo&gt;"/>
+```
+
 
 #### Example 12: Avoiding self-closing tags
 If for some reason you want to avoid self-closing tags, you can pass in a special config option `_selfCloseTag`:

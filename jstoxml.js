@@ -29,12 +29,26 @@ const getType = val => {
 };
 
 /**
+ * Replaces matching values in a string with a new value.
+ * Example:
+ * filterStr('foo&bar', { '&': '&amp;' });
+ */
+const filterStr = (inputStr = '', filter = {}) => {
+  const searches = Object.keys(filter);
+  const joinedSearches = searches.join('|');
+  const regexpStr = `(${joinedSearches})`;
+  const regexp = new RegExp(regexpStr, 'g');
+
+  return String(inputStr).replace(regexp, (str, entity) => filter[entity] || '');
+};
+
+/**
  * Maps an object or array of arribute keyval pairs to a string.
  * Examples:
  * { foo: 'bar', baz: 'g' } -> 'foo="bar" baz="g"'
  * [ { key: '⚡', val: true }, { foo: 'bar' } ] -> '⚡ foo="bar"'
  */
-const getAttributeKeyVals = (attributes = {}) => {
+const getAttributeKeyVals = (attributes = {}, filter) => {
   const isArray = Array.isArray(attributes);
 
   let keyVals = [];
@@ -44,7 +58,8 @@ const getAttributeKeyVals = (attributes = {}) => {
       const key = Object.keys(attr)[0];
       const val = attr[key];
 
-      const valStr = (val === true) ? '' : `="${val}"`;
+      const filteredVal = (filter) ? filterStr(val, filter) : val;
+      const valStr = (filteredVal === true) ? '' : `="${filteredVal}"`;
       return `${key}${valStr}`;
     });
   } else {
@@ -53,7 +68,8 @@ const getAttributeKeyVals = (attributes = {}) => {
       // Simple object - keyval pairs.
 
       // For boolean true, simply output the key.
-      const valStr = (attributes[key] === true) ? '' : `="${attributes[key]}"`;
+      const filteredVal = (filter) ? filterStr(attributes[key], filter) : attributes[key];
+      const valStr = (attributes[key] === true) ? '' : `="${filteredVal}"`;
 
       return `${key}${valStr}`;
     });
@@ -68,26 +84,12 @@ const getAttributeKeyVals = (attributes = {}) => {
  * formatAttributes({ a: 1, b: 2 })
  * -> 'a="1" b="2"'
  */
-const formatAttributes = (attributes = {}) => {
-  const keyVals = getAttributeKeyVals(attributes);
+const formatAttributes = (attributes = {}, filter) => {
+  const keyVals = getAttributeKeyVals(attributes, filter);
   if (keyVals.length === 0) return '';
 
   const keysValsJoined = keyVals.join(' ');
   return ` ${keysValsJoined}`;
-};
-
-/**
- * Replaces matching values in a string with a new value.
- * Example:
- * filterStr('foo&bar', { '&': '&amp;' });
- */
-const filterStr = (inputStr = '', filter = {}) => {
-  const searches = Object.keys(filter);
-  const joinedSearches = searches.join('|');
-  const regexpStr = `(${joinedSearches})`;
-  const regexp = new RegExp(regexpStr, 'g');
-
-  return String(inputStr).replace(regexp, (str, entity) => filter[entity] || '');
 };
 
 /**
@@ -192,7 +194,7 @@ export const toXML = (obj = {}, config = {}) => {
       (valIsEmpty && obj._selfCloseTag) :
       valIsEmpty;
     const selfCloseStr = (shouldSelfClose) ? '/' : '';
-    const attributesString = formatAttributes(obj._attrs);
+    const attributesString = formatAttributes(obj._attrs, config.attributesFilter);
     const tag = `<${_name}${attributesString}${selfCloseStr}>`;
 
     // Post-tag output (closing tag, indent, line breaks).

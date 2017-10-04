@@ -400,7 +400,7 @@ describe('jstoxml', () => {
   });
 
   describe('filtering', () => {
-    it('entities', () => {
+    it('values', () => {
       const val = {
         foo: '<a>',
         bar: '"b"',
@@ -418,6 +418,25 @@ describe('jstoxml', () => {
       const result = jstoxml.toXML(val, config);
       const expectedResult =
         '<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>';
+      assert.equal(result, expectedResult);
+    });
+
+    it('attributes', () => {
+      const val = {
+        _name: 'foo',
+        _attrs: { a: '<"\'&"foo>' }
+      };
+      const config = {
+        attributesFilter: {
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          '\'': '&apos;',
+          '&': '&amp;'
+        }
+      };
+      const result = jstoxml.toXML(val, config);
+      const expectedResult = '<foo a="&lt;&quot;&apos;&amp;&quot;foo&gt;"/>';
       assert.equal(result, expectedResult);
     });
   });
@@ -834,6 +853,30 @@ describe('jstoxml', () => {
       const result = jstoxml.toXML(val, config);
       const expectedResult =
         '<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>';
+      assert.equal(result, expectedResult);
+    });
+
+    it('11b attributes filter', () => {
+      const val = {
+        _name: 'foo',
+        _content: 'bar',
+        _attrs: {
+          a: 'http://example.com/?test=\'1\'&foo=<bar>&whee="sha"',
+          b: 'http://example2.com/?test=\'2\'&md=<5>&sum="sha"'
+        }
+      };
+      const config = {
+        attributesFilter: {
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          '\'': '&apos;',
+          '&': '&amp;'
+        }
+      };
+      const result = jstoxml.toXML(val, config);
+      const expectedResult =
+        '<foo a="http://example.com/?test=&apos;1&apos;&amp;foo=&lt;bar&gt;&amp;whee=&quot;sha&quot;" b="http://example2.com/?test=&apos;2&apos;&amp;md=&lt;5&gt;&amp;sum=&quot;sha&quot;">bar</foo>';
       assert.equal(result, expectedResult);
     });
 
