@@ -499,9 +499,9 @@ Output:
 ```javascript
 jstoxml.toXML({
   html: {
-    _attrs: [
-      { key: '⚡', val: true }
-    ]
+    _attrs: {
+      '⚡': true
+    }
   }
 });
 ```
