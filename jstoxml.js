@@ -5,28 +5,18 @@ const privateVarsRegexp = new RegExp(privateVarsJoined, 'g');
 /**
  * Determines the indent string based on current tree depth.
  */
-const getIndentStr = (baseIndentStr = '', depth = 0) => baseIndentStr.repeat(depth);
+const getIndentStr = (indent = '', depth = 0) => indent.repeat(depth);
 
 /**
  * Sugar function supplementing JS's quirky typeof operator, plus some extra help to detect
  * "special objects" expected by jstoxml.
  */
-const getType = val => {
-  let type;
-  if (Array.isArray(val)) {
-    type = 'array';
-  } else if (typeof val === 'object' && val !== null && val._name) {
-    type = 'special-object';
-  } else if (val instanceof Date) {
-    type = 'date';
-  } else if (val === null) {
-    type = 'null';
-  } else {
-    type = typeof val;
-  }
-
-  return type;
-};
+const getType = val =>
+  Array.isArray(val) && 'array' ||
+      (typeof val === 'object' && val !== null && val._name && 'special-object') ||
+      (val instanceof Date && 'date') ||
+      val === null && 'null' ||
+      typeof val;
 
 /**
  * Replaces matching values in a string with a new value.
@@ -34,10 +24,7 @@ const getType = val => {
  * filterStr('foo&bar', { '&': '&amp;' });
  */
 const filterStr = (inputStr = '', filter = {}) => {
-  const searches = Object.keys(filter);
-  const joinedSearches = searches.join('|');
-  const regexpStr = `(${joinedSearches})`;
-  const regexp = new RegExp(regexpStr, 'g');
+  const regexp = new RegExp(`(${ Object.keys(filter).join('|') })`, 'g');
 
   return String(inputStr).replace(regexp, (str, entity) => filter[entity] || '');
 };
@@ -46,7 +33,7 @@ const filterStr = (inputStr = '', filter = {}) => {
  * Maps an object or array of arribute keyval pairs to a string.
  * Examples:
  * { foo: 'bar', baz: 'g' } -> 'foo="bar" baz="g"'
- * [ { key: '⚡', val: true }, { foo: 'bar' } ] -> '⚡ foo="bar"'
+ * [ { ⚡: true }, { foo: 'bar' } ] -> '⚡ foo="bar"'
  */
 const getAttributeKeyVals = (attributes = {}, filter) => {
   const isArray = Array.isArray(attributes);
@@ -79,7 +66,7 @@ const getAttributeKeyVals = (attributes = {}, filter) => {
 };
 
 /**
- * Converts an attributes object to a string of keyval pairs.
+ * Converts an attributes object/array to a string of keyval pairs.
  * Example:
  * formatAttributes({ a: 1, b: 2 })
  * -> 'a="1" b="2"'
@@ -117,11 +104,8 @@ const objToArray = (obj = {}) => (Object.keys(obj).map(key => ({
  * Determines if a value is a simple primitive type that can fit onto one line.  Needed for
  * determining any needed indenting and line breaks.
  */
-const isSimpleType = val => {
-  const valType = getType(val);
-  return (valType === 'string' || valType === 'number' || valType === 'boolean' ||
-    valType === 'date' || valType === 'special-object');
-};
+const SIMPLE_TYPES = ['string', 'number', 'boolean', 'date', 'special-object'];
+const isSimpleType = val => SIMPLE_TYPES.includes(getType(val));
 
 /**
  * Determines if an XML string is a simple primitive, or contains nested data.
@@ -131,15 +115,15 @@ const isSimpleXML = xmlStr => !xmlStr.match('<');
 /**
  * Assembles an XML header as defined by the config.
  */
-const defaultHeader = '<?xml version="1.0" encoding="UTF-8"?>';
-const getHeaderString = (config, depth, isOutputStart) => {
+const DEFAULT_XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
+const getHeaderString = ({ header, indent, depth, isOutputStart }) => {
   let headerStr = '';
-  const shouldOutputHeader = config.header && isOutputStart;
+  const shouldOutputHeader = header && isOutputStart;
   if (shouldOutputHeader) {
-    const shouldUseDefaultHeader = typeof config.header === 'boolean';
-    headerStr = (shouldUseDefaultHeader) ? defaultHeader : config.header;
+    const shouldUseDefaultHeader = typeof header === 'boolean';
+    headerStr = (shouldUseDefaultHeader) ? DEFAULT_XML_HEADER : header;
 
-    if (config.indent) headerStr += '\n';
+    if (indent) headerStr += '\n';
   }
 
   return headerStr;
@@ -148,19 +132,30 @@ const getHeaderString = (config, depth, isOutputStart) => {
 /**
  * Recursively traverses an object tree and converts the output to an XML string.
  */
-export const toXML = (obj = {}, config = {}) => {
-  // Determine tree depth.
-  const depth = (config.depth) ? config.depth : 0;
+export const toXML = (
+  obj = {},
+  config = {}
+) => {
+  const {
+    // Tree depth
+    depth = 0,
+    indent,
+    _isFirstItem,
+    _isLastItem,
+    attributesFilter,
+    header,
+    filter
+  } = config;
 
   // Determine indent string based on depth.
-  const indentStr = getIndentStr(config.indent, depth);
+  const indentStr = getIndentStr(indent, depth);
 
   // For branching based on value type.
   const valType = getType(obj);
   const isSimple = isSimpleType(obj);
 
   // Determine if this is the start of the output.  Needed for header and indenting.
-  const isOutputStart = depth === 0 && (isSimple || (!isSimple && config._isFirstItem));
+  const isOutputStart = depth === 0 && (isSimple || (!isSimple && _isFirstItem));
 
   let outputStr = '';
   switch (valType) {
@@ -178,14 +173,13 @@ export const toXML = (obj = {}, config = {}) => {
     // Don't output private vars (such as _attrs).
     if (_name.match(privateVarsRegexp)) break;
 
-    // Process the nested new value and config.
-    const newConfig = Object.assign({}, config, { depth: depth + 1 });
-    const newVal = toXML(_content, newConfig);
+    // Process the nested new value and create new config.
+    const newVal = toXML(_content, { ...config, depth: depth + 1 });
     const newValType = getType(newVal);
     const isNewValSimple = isSimpleXML(newVal);
 
     // Pre-tag output (indent and line breaks).
-    const preIndentStr = (config.indent && !isOutputStart) ? '\n' : '';
+    const preIndentStr = (indent && !isOutputStart) ? '\n' : '';
     const preTag = `${preIndentStr}${indentStr}`;
 
     // Tag output.
@@ -194,11 +188,11 @@ export const toXML = (obj = {}, config = {}) => {
       (valIsEmpty && obj._selfCloseTag) :
       valIsEmpty;
     const selfCloseStr = (shouldSelfClose) ? '/' : '';
-    const attributesString = formatAttributes(obj._attrs, config.attributesFilter);
+    const attributesString = formatAttributes(obj._attrs, attributesFilter);
     const tag = `<${_name}${attributesString}${selfCloseStr}>`;
 
     // Post-tag output (closing tag, indent, line breaks).
-    const preTagCloseStr = (config.indent && !isNewValSimple) ? `\n${indentStr}` : '';
+    const preTagCloseStr = (indent && !isNewValSimple) ? `\n${indentStr}` : '';
     const postTag = (!shouldSelfClose) ? `${newVal}${preTagCloseStr}</${_name}>` : '';
 
     outputStr = `${preTag}${tag}${postTag}`;
@@ -210,10 +204,11 @@ export const toXML = (obj = {}, config = {}) => {
 
     const keys = Object.keys(obj);
     const outputArr = keys.map((key, index) => {
-      const newConfig = Object.assign({}, config, {
+      const newConfig = {
+        ...config,
         _isFirstItem: index === 0,
         _isLastItem: ((index + 1) === keys.length)
-      });
+      };
 
       const outputObj = { _name: key };
 
@@ -271,10 +266,11 @@ export const toXML = (obj = {}, config = {}) => {
     // Iterates and converts each value in an array.
 
     const outputArr = obj.map((singleVal, index) => {
-      const newConfig = Object.assign({}, config, {
+      const newConfig = {
+        ...config,
         _isFirstItem: index === 0,
         _isLastItem: ((index + 1) === obj.length)
-      });
+      };
       return toXML(singleVal, newConfig);
     });
 
@@ -282,20 +278,14 @@ export const toXML = (obj = {}, config = {}) => {
     break;
   }
 
-  case 'number':
-  case 'string':
-  case 'boolean':
-  case 'date':
-  case 'null':
+  // number, string, boolean, date, null, etc
   default: {
-    outputStr = filterStr(obj, config.filter);
+    outputStr = filterStr(obj, filter);
     break;
   }
   }
 
-  const headerStr = getHeaderString(config, depth, isOutputStart);
+  const headerStr = getHeaderString({ header, indent, depth, isOutputStart });
 
-  outputStr = `${headerStr}${outputStr}`;
-
-  return outputStr;
+  return `${headerStr}${outputStr}`;
 };
