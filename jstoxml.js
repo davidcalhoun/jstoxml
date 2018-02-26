@@ -1,6 +1,14 @@
-const privateVars = ['_selfCloseTag', '_attrs'];
-const privateVarsJoined = privateVars.join('|');
-const privateVarsRegexp = new RegExp(privateVarsJoined, 'g');
+const ARRAY = 'array';
+const BOOLEAN = 'boolean';
+const DATE = 'date';
+const NULL = 'null';
+const NUMBER = 'number';
+const OBJECT = 'object';
+const SPECIAL_OBJECT = 'special-object';
+const STRING = 'string';
+
+const PRIVATE_VARS = ['_selfCloseTag', '_attrs'];
+const PRIVATE_VARS_REGEXP = new RegExp(PRIVATE_VARS.join('|'), 'g');
 
 /**
  * Determines the indent string based on current tree depth.
@@ -10,18 +18,22 @@ const getIndentStr = (indent = '', depth = 0) => indent.repeat(depth);
 /**
  * Sugar function supplementing JS's quirky typeof operator, plus some extra help to detect
  * "special objects" expected by jstoxml.
+ * Example:
+ * getType(new Date());
+ * -> 'date'
  */
 const getType = val =>
-  Array.isArray(val) && 'array' ||
-      (typeof val === 'object' && val !== null && val._name && 'special-object') ||
-      (val instanceof Date && 'date') ||
-      val === null && 'null' ||
+  Array.isArray(val) && ARRAY ||
+      (typeof val === OBJECT && val !== null && val._name && SPECIAL_OBJECT) ||
+      (val instanceof Date && DATE) ||
+      val === null && NULL ||
       typeof val;
 
 /**
  * Replaces matching values in a string with a new value.
  * Example:
  * filterStr('foo&bar', { '&': '&amp;' });
+ * -> 'foo&amp;bar'
  */
 const filterStr = (inputStr = '', filter = {}) => {
   const regexp = new RegExp(`(${ Object.keys(filter).join('|') })`, 'g');
@@ -103,12 +115,18 @@ const objToArray = (obj = {}) => (Object.keys(obj).map(key => ({
 /**
  * Determines if a value is a simple primitive type that can fit onto one line.  Needed for
  * determining any needed indenting and line breaks.
+ * Example:
+ * isSimpleType(new Date());
+ * -> true
  */
-const SIMPLE_TYPES = ['string', 'number', 'boolean', 'date', 'special-object'];
+const SIMPLE_TYPES = [STRING, NUMBER, BOOLEAN, DATE, SPECIAL_OBJECT];
 const isSimpleType = val => SIMPLE_TYPES.includes(getType(val));
 
 /**
  * Determines if an XML string is a simple primitive, or contains nested data.
+ * Example:
+ * isSimpleXML('<foo />');
+ * -> false
  */
 const isSimpleXML = xmlStr => !xmlStr.match('<');
 
@@ -117,20 +135,19 @@ const isSimpleXML = xmlStr => !xmlStr.match('<');
  */
 const DEFAULT_XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
 const getHeaderString = ({ header, indent, depth, isOutputStart }) => {
-  let headerStr = '';
   const shouldOutputHeader = header && isOutputStart;
-  if (shouldOutputHeader) {
-    const shouldUseDefaultHeader = typeof header === 'boolean';
-    headerStr = (shouldUseDefaultHeader) ? DEFAULT_XML_HEADER : header;
 
-    if (indent) headerStr += '\n';
-  }
+  if (!shouldOutputHeader) return '';
 
-  return headerStr;
+  const shouldUseDefaultHeader = typeof header === BOOLEAN;
+  return `${ (shouldUseDefaultHeader) ? DEFAULT_XML_HEADER : header }${ indent ? '\n' : '' }`;
 };
 
 /**
  * Recursively traverses an object tree and converts the output to an XML string.
+ * Example:
+ * toXML({ foo: 'bar' });
+ * -> <foo>bar</foo>
  */
 export const toXML = (
   obj = {},
@@ -171,7 +188,7 @@ export const toXML = (
     }
 
     // Don't output private vars (such as _attrs).
-    if (_name.match(privateVarsRegexp)) break;
+    if (_name.match(PRIVATE_VARS_REGEXP)) break;
 
     // Process the nested new value and create new config.
     const newVal = toXML(_content, { ...config, depth: depth + 1 });
@@ -184,7 +201,7 @@ export const toXML = (
 
     // Tag output.
     const valIsEmpty = newValType === 'undefined' || newVal === '';
-    const shouldSelfClose = (typeof obj._selfCloseTag === 'boolean') ?
+    const shouldSelfClose = (typeof obj._selfCloseTag === BOOLEAN) ?
       (valIsEmpty && obj._selfCloseTag) :
       valIsEmpty;
     const selfCloseStr = (shouldSelfClose) ? '/' : '';
@@ -217,7 +234,7 @@ export const toXML = (
 
         // Move private vars up as needed.  Needed to support certain types of objects
         // E.g. { foo: { _attrs: { a: 1 } } } -> <foo a="1"/>
-        privateVars.forEach(privateVar => {
+        PRIVATE_VARS.forEach(privateVar => {
           const val = obj[key][privateVar];
           if (typeof val !== 'undefined') {
             outputObj[privateVar] = val;
