@@ -27,7 +27,7 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
 
 ```javascript
-var jstoxml = require('jstoxml');
+const jstoxml = require('jstoxml');
 ```
 
 #### Example 1: Simple object
@@ -158,14 +158,14 @@ Output:
 Note that cases like this might be especially hard to read because of the deep nesting, so it's recommend you use something like this pattern instead, which breaks it up into more readable pieces:
 
 ```javascript
-var bar = {
+const bar = {
   _name: 'bar',
   _attrs: {
     c: 'd'
   }
 };
 
-var foo = {
+const foo = {
   _name: 'foo',
   _attrs: {
     a: 'b'
