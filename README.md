@@ -12,13 +12,18 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 ### Installation
 * npm install jstoxml
 
-### Version 1.3.0
+### Changelog
+
+#### Version 1.3.0
 * restored `default` module export (#31)
 
-### Version 1.1.0
+#### Version 1.2.0
+* refactoring and cleanup
+
+#### Version 1.1.0
 * Added support for attribute filtering (see Example 11b below).
 
-### Version 1.0.0
+#### Version 1.0.0
 * Complete rewrite!  The code should now be easier to understand and maintain.
 * now supports emoji/UTF8 tag attributes (needed for AMP pages - e.g. `<html ⚡ lang="en">`) (see example 14)
 * now supports duplicate attribute key names (see example 15)
