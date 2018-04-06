@@ -61,8 +61,12 @@ Note: because JavaScript doesn't allow duplicate key names, only the last define
 #### Example 2: Simple array (needed for duplicate keys)
 ```javascript
 toXML([
-  {foo: 'bar'},
-  {foo: 'bar2'}
+  {
+    foo: 'bar'
+  },
+  {
+    foo: 'bar2'
+  }
 ]);
 ```
 Output:
@@ -73,9 +77,7 @@ Output:
 
 #### Example 3: Simple functions
 ```javascript
-toXML({
-  currentTime: () => new Date()
-});
+toXML({ currentTime: () => new Date() });
 ```
 Output:
 
@@ -123,12 +125,17 @@ text1<foo>bar</foo>text2
 #### Example 6: Nested tags (with indenting)
 
 ```javascript
+const xmlOptions = {
+  header: false,
+  indent: '  '
+};
+
 toXML({
   a: {
     foo: 'bar',
     foo2: 'bar2'
   }
-}, {header: false, indent: '  '});
+}, xmlOptions);
 ```
 Output:
 
@@ -142,6 +149,11 @@ Output:
 
 #### Example 7: Nested tags with attributes (with indenting)
 ```javascript
+const xmlOptions = {
+  header: false,
+  indent: '  '
+};
+
 toXML({
   ooo: {
     _name: 'foo',
@@ -155,7 +167,7 @@ toXML({
       }
     }
   }
-}, {header: false, indent: '  '});
+}, xmlOptions);
 ```
 Output:
 
@@ -183,11 +195,17 @@ const foo = {
     a: 'b'
   },
   _content: bar
-}
+};
+
+const xmlOptions = {
+  header: false,
+  indent: '  '
+};
 
 return toXML({
   ooo: foo
-}, {header: false, indent: '  '})
+},
+xmlOptions);
 ```
 
 
@@ -211,6 +229,11 @@ Output:
 
 #### Example 9: RSS Feed
 ```javascript
+const xmlOptions = {
+  header: true,
+  indent: '  '
+};
+
 toXML({
   _name: 'rss',
   _attrs: {
@@ -218,35 +241,40 @@ toXML({
   },
   _content: {
     channel: [
-      {title: 'RSS Example'},
-      {description: 'Description'},
-      {link: 'google.com'},
-      {lastBuildDate: function(){
-        return new Date();
-      }},
-      {pubDate: function(){
-        return new Date();
-      }},
-      {language: 'en'},
-      {item: {
-        title: 'Item title',
-        link: 'Item link',
-        description: 'Item Description',
-        pubDate: function(){
-          return new Date();
+      {
+        title: 'RSS Example'
+      },
+      {
+        description: 'Description'},
+      {
+        link: 'google.com'},
+      {
+        lastBuildDate: () => new Date()
+      },
+      {
+        pubDate: () => new Date()
+      },
+      {
+        language: 'en'},
+      {
+        item: {
+          title: 'Item title',
+          link: 'Item link',
+          description: 'Item Description',
+          pubDate: () => new Date()
         }
-      }},
-      {item: {
-        title: 'Item2 title',
-        link: 'Item2 link',
-        description: 'Item2 Description',
-        pubDate: function(){
-          return new Date();
+      },
+      {
+        item: {
+          title: 'Item2 title',
+          link: 'Item2 link',
+          description: 'Item2 Description',
+          pubDate: () => new Date()
         }
-      }}
+      }
     ]
   }
-}, {header: true, indent: '  '});
+}, xmlOptions);
 ```
 Output:
 
@@ -281,6 +309,11 @@ Output:
 (see the [Apple docs](http://www.apple.com/itunes/podcasts/specs.html) for more information)
 
 ```javascript
+const xmlOptions = {
+  header: true,
+  indent: '  '
+};
+
 toXML({
   _name: 'rss',
   _attrs: {
@@ -289,18 +322,36 @@ toXML({
   },
   _content: {
     channel: [
-      {title: 'Title'},
-      {link: 'google.com'},
-      {language: 'en-us'},
-      {copyright: 'Copyright 2011'},
-      {'itunes:subtitle': 'Subtitle'},
-      {'itunes:author': 'Author'},
-      {'itunes:summary': 'Summary'},
-      {description: 'Description'},
-      {'itunes:owner': {
-        'itunes:name': 'Name',
-        'itunes:email': 'Email'
-      }},
+      {
+        title: 'Title'
+      },
+      {
+        link: 'google.com'
+      },
+      {
+        language: 'en-us'
+      },
+      {
+        copyright: 'Copyright 2011'
+      },
+      {
+        'itunes:subtitle': 'Subtitle'
+      },
+      {
+        'itunes:author': 'Author'
+      },
+      {
+        'itunes:summary': 'Summary'
+      },
+      {
+        description: 'Description'
+      },
+      {
+        'itunes:owner': {
+          'itunes:name': 'Name',
+          'itunes:email': 'Email'
+        }
+      },
       {
         _name: 'itunes:image',
         _attrs: {
@@ -327,11 +378,21 @@ toXML({
       },
       {
         item: [
-          {title: 'Podcast Title'},
-          {'itunes:author': 'Author'},
-          {'itunes:subtitle': 'Subtitle'},
-          {'itunes:summary': 'Summary'},
-          {'itunes:image': 'image.jpg'},
+          {
+            title: 'Podcast Title'
+          },
+          {
+            'itunes:author': 'Author'
+          },
+          {
+            'itunes:subtitle': 'Subtitle'
+          },
+          {
+            'itunes:summary': 'Summary'
+          },
+          {
+            'itunes:image': 'image.jpg'
+          },
           {
             _name: 'enclosure',
             _attrs: {
@@ -340,19 +401,37 @@ toXML({
               type: 'audio/x-m4a'
             }
           },
-          {guid: 'http://example.com/archive/aae20050615.m4a'},
-          {pubDate: 'Wed, 15 Jun 2011 19:00:00 GMT'},
-          {'itunes:duration': '7:04'},
-          {'itunes:keywords': 'salt, pepper, shaker, exciting'}
+          {
+            guid: 'http://example.com/archive/aae20050615.m4a'
+          },
+          {
+            pubDate: 'Wed, 15 Jun 2011 19:00:00 GMT'
+          },
+          {
+            'itunes:duration': '7:04'
+          },
+          {
+            'itunes:keywords': 'salt, pepper, shaker, exciting'
+          }
         ]
       },
       {
         item: [
-          {title: 'Podcast2 Title'},
-          {'itunes:author': 'Author2'},
-          {'itunes:subtitle': 'Subtitle2'},
-          {'itunes:summary': 'Summary2'},
-          {'itunes:image': 'image2.jpg'},
+          {
+            title: 'Podcast2 Title'
+          },
+          {
+            'itunes:author': 'Author2'
+          },
+          {
+            'itunes:subtitle': 'Subtitle2'
+          },
+          {
+            'itunes:summary': 'Summary2'
+          },
+          {
+            'itunes:image': 'image2.jpg'
+          },
           {
             _name: 'enclosure',
             _attrs: {
@@ -361,15 +440,23 @@ toXML({
               type: 'audio/x-m4a'
             }
           },
-          {guid: 'http://example.com/archive/aae2.m4a'},
-          {pubDate: 'Wed, 15 Jul 2011 19:00:00 GMT'},
-          {'itunes:duration': '11:20'},
-          {'itunes:keywords': 'foo, bar'}
+          {
+            guid: 'http://example.com/archive/aae2.m4a'
+          },
+          {
+            pubDate: 'Wed, 15 Jul 2011 19:00:00 GMT'
+          },
+          {
+            'itunes:duration': '11:20'
+          },
+          {
+            'itunes:keywords': 'foo, bar'
+          }
         ]
       }
     ]
   }
-}, {header: true, indent: '  '});
+}, xmlOptions);
 ```
 
 Output:
@@ -426,20 +513,21 @@ Output:
 #### Example 11: Custom filter for XML entities, or whatever
 
 ```javascript
+const xmlOptions = {
+  filter: {
+    '<': '&lt;', 
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&apos;',
+    '&': '&amp;'
+  }
+};
+
 toXML({
 	foo: '<a>',
 	bar: '"b"',
 	baz: '\'&whee\''
-},
-{
-	filter: {
-		'<': '&lt;', 
-		'>': '&gt;',
-		'"': '&quot;',
-		'\'': '&apos;',
-		'&': '&amp;'
-	}
-});
+}, xmlOptions);
 ```
 
 Output:
@@ -451,11 +539,7 @@ Output:
 #### Example 11b: Custom filter for XML attributes
 
 ```javascript
-toXML({
-  _name: 'foo',
-  _attrs: { a: '<"\'&"foo>' }
-},
-{
+const xmlOptions = {
   attributesFilter: {
     '<': '&lt;', 
     '>': '&gt;',
@@ -463,7 +547,12 @@ toXML({
     '\'': '&apos;',
     '&': '&amp;'
   }
-});
+};
+
+toXML({
+  _name: 'foo',
+  _attrs: { a: '<"\'&"foo>' }
+}, xmlOptions);
 ```
 
 Output:
@@ -477,13 +566,14 @@ Output:
 If for some reason you want to avoid self-closing tags, you can pass in a special config option `_selfCloseTag`:
 
 ```javascript
+const xmlOptions = {
+  _selfCloseTag: false
+};
+
 toXML({
   foo: '',
   bar: undefined
-},
-{
-  _selfCloseTag: false
-});
+}, xmlOptions);
 ```
 
 Output:
@@ -495,9 +585,13 @@ Output:
 #### Example 13: Custom XML header
 
 ```javascript
+const xmlOptions = {
+  header: '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'
+};
+
 toXML({
   foo: 'bar'
-}, {header: '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'});
+}, xmlOptions);
 ```
 
 Output:
@@ -530,8 +624,12 @@ Output:
 toXML({
   html: {
     _attrs: [
-      { lang: 'en' },
-      { lang: 'klingon' }
+      {
+        lang: 'en'
+      },
+      {
+        lang: 'klingon'
+      }
     ]
   }
 });
