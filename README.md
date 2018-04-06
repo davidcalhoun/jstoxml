@@ -1,6 +1,6 @@
 jstoxml
 =========
-[![Build Status](https://travis-ci.org/davidcalhoun/svg?branch=master)](https://travis-ci.org/davidcalhoun/jstoxml)
+[![Build Status](https://travis-ci.org/davidcalhoun/jstoxml.svg?branch=master)](https://travis-ci.org/davidcalhoun/jstoxml)
 [![Downloads][downloads-image]][npm-url]
 
 ### Convert JavaScript objects (and JSON) to XML (for RSS, Podcasts, etc.)
