@@ -1,6 +1,6 @@
 jstoxml
 =========
-[![Build Status](https://travis-ci.org/davidcalhoun/jstoxml.svg?branch=master)](https://travis-ci.org/davidcalhoun/jstoxml)
+[![Build Status](https://travis-ci.org/davidcalhoun/svg?branch=master)](https://travis-ci.org/davidcalhoun/jstoxml)
 [![Downloads][downloads-image]][npm-url]
 
 ### Convert JavaScript objects (and JSON) to XML (for RSS, Podcasts, etc.)
@@ -27,12 +27,16 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
 
 ```javascript
-const jstoxml = require('jstoxml');
+// Node
+const { toXML } = require('jstoxml');
+
+// Browser
+import { toXML } from 'jstoxml';
 ```
 
 #### Example 1: Simple object
 ```javascript
-jstoxml.toXML({
+toXML({
   foo: 'bar',
   foo2: 'bar2'
 });
@@ -48,7 +52,7 @@ Note: because JavaScript doesn't allow duplicate key names, only the last define
 
 #### Example 2: Simple array (needed for duplicate keys)
 ```javascript
-jstoxml.toXML([
+toXML([
   {foo: 'bar'},
   {foo: 'bar2'}
 ]);
@@ -61,7 +65,7 @@ Output:
 
 #### Example 3: Simple functions
 ```javascript
-jstoxml.toXML({
+toXML({
   currentTime: () => new Date()
 });
 ```
@@ -74,7 +78,7 @@ Output:
 
 #### Example 4: XML tag attributes
 ```javascript
-jstoxml.toXML({
+toXML({
   _name: 'foo',
   _content: 'bar',
   _attrs: {
@@ -94,7 +98,7 @@ Output:
 To output text content, set a key to null:
 
 ```javascript
-jstoxml.toXML({
+toXML({
   'text1': null,
   foo: 'bar',
   'text2': null
@@ -111,7 +115,7 @@ text1<foo>bar</foo>text2
 #### Example 6: Nested tags (with indenting)
 
 ```javascript
-jstoxml.toXML({
+toXML({
   a: {
     foo: 'bar',
     foo2: 'bar2'
@@ -130,7 +134,7 @@ Output:
 
 #### Example 7: Nested tags with attributes (with indenting)
 ```javascript
-jstoxml.toXML({
+toXML({
   ooo: {
     _name: 'foo',
     _attrs: {
@@ -173,7 +177,7 @@ const foo = {
   _content: bar
 }
 
-return jstoxml.toXML({
+return toXML({
   ooo: foo
 }, {header: false, indent: '  '})
 ```
@@ -183,7 +187,7 @@ return jstoxml.toXML({
 Function outputs will be processed (fed back into toXML), meaning that you can output objects that will in turn be converted to XML.
 
 ```javascript
-jstoxml.toXML({
+toXML({
   someNestedXML: () => {
     return {
       foo: 'bar'
@@ -199,7 +203,7 @@ Output:
 
 #### Example 9: RSS Feed
 ```javascript
-jstoxml.toXML({
+toXML({
   _name: 'rss',
   _attrs: {
     version: '2.0'
@@ -269,7 +273,7 @@ Output:
 (see the [Apple docs](http://www.apple.com/itunes/podcasts/specs.html) for more information)
 
 ```javascript
-jstoxml.toXML({
+toXML({
   _name: 'rss',
   _attrs: {
     'xmlns:itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
@@ -414,7 +418,7 @@ Output:
 #### Example 11: Custom filter for XML entities, or whatever
 
 ```javascript
-jstoxml.toXML({
+toXML({
 	foo: '<a>',
 	bar: '"b"',
 	baz: '\'&whee\''
@@ -439,7 +443,7 @@ Output:
 #### Example 11b: Custom filter for XML attributes
 
 ```javascript
-jstoxml.toXML({
+toXML({
   _name: 'foo',
   _attrs: { a: '<"\'&"foo>' }
 },
@@ -465,7 +469,7 @@ Output:
 If for some reason you want to avoid self-closing tags, you can pass in a special config option `_selfCloseTag`:
 
 ```javascript
-jstoxml.toXML({
+toXML({
   foo: '',
   bar: undefined
 },
@@ -483,7 +487,7 @@ Output:
 #### Example 13: Custom XML header
 
 ```javascript
-jstoxml.toXML({
+toXML({
   foo: 'bar'
 }, {header: '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'});
 ```
@@ -497,7 +501,7 @@ Output:
 #### Example 14: Emoji attribute support (needed for AMP)
 
 ```javascript
-jstoxml.toXML({
+toXML({
   html: {
     _attrs: {
       '⚡': true
@@ -515,7 +519,7 @@ Output:
 #### Example 15: Duplicate attribute key support
 
 ```javascript
-jstoxml.toXML({
+toXML({
   html: {
     _attrs: [
       { lang: 'en' },
@@ -534,7 +538,7 @@ Output:
 ### License
 MIT
 
-[downloads-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/jstoxml
-[npm-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat
+[npm-image]: https://img.shields.io/npm/dm/svg?style=flat
 

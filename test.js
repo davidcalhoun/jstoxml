@@ -1,7 +1,7 @@
-const jstoxml = require('./dist/jstoxml');
+const { toXML } = require('./dist/jstoxml');
 const assert = require('assert');
 
-describe('jstoxml', () => {
+describe('toXML', () => {
   describe('primitives', () => {
     const vals = [
       'foo',
@@ -13,7 +13,7 @@ describe('jstoxml', () => {
 
     vals.forEach(val => {
       it(`outputs ${val}`, () => {
-        const result = jstoxml.toXML(val);
+        const result = toXML(val);
         const expectedResult = `${val}`;
         assert.equal(result, expectedResult);
       });
@@ -31,7 +31,7 @@ describe('jstoxml', () => {
 
       vals.forEach((val) => {
         it(`${val}`, () => {
-          const result = jstoxml.toXML(() => val);
+          const result = toXML(() => val);
           const expectedResult = `${val}`;
           assert.equal(result, expectedResult);
         });
@@ -40,7 +40,7 @@ describe('jstoxml', () => {
 
     it('fat arrow', () => {
       const val = 888;
-      const result = jstoxml.toXML(() => val);
+      const result = toXML(() => val);
       const expectedResult = val;
       assert.equal(result, expectedResult);
     });
@@ -51,21 +51,21 @@ describe('jstoxml', () => {
           depth: config => config.depth
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo><depth>2</depth></foo>';
       assert.equal(result, expectedResult);
     });
 
     it('converts nonprimitive output', () => {
       const val = { foo: 'bar' };
-      const result = jstoxml.toXML(() => val);
+      const result = toXML(() => val);
       const expectedResult = '<foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
 
     it('converts nested nonprimitive output', () => {
       const val = { foo: { bar: { baz: 2 } } };
-      const result = jstoxml.toXML(() => val);
+      const result = toXML(() => val);
       const expectedResult = '<foo><bar><baz>2</baz></bar></foo>';
       assert.equal(result, expectedResult);
     });
@@ -73,7 +73,7 @@ describe('jstoxml', () => {
     it('converts nested nonprimitive output with indent', () => {
       const val = { foo: { bar: { baz: 2 } } };
       const config = { indent: '  ' };
-      const result = jstoxml.toXML(() => val, config);
+      const result = toXML(() => val, config);
       const expectedResult = '<foo>\n  <bar>\n    <baz>2</baz>\n  </bar>\n</foo>';
       assert.equal(result, expectedResult);
     });
@@ -89,7 +89,7 @@ describe('jstoxml', () => {
         ok2: 'false',
         ok3: 'true'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>true</foo><bar/><foo2>false</foo2><ok>This is ok</ok><ok2>false</ok2><ok3>true</ok3>';
       assert.equal(result, expectedResult);
     });
@@ -99,7 +99,7 @@ describe('jstoxml', () => {
         foo: 4,
         bar: '&'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>4</foo><bar>&</bar>';
       assert.equal(result, expectedResult);
     });
@@ -113,7 +113,7 @@ describe('jstoxml', () => {
           '&': '&amp;'
         }
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = '<foo>&amp;</foo>';
       assert.equal(result, expectedResult);
     });
@@ -126,7 +126,7 @@ describe('jstoxml', () => {
         { foo: 'baz' },
         { foo2: 'bar2' }
       ];
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo><foo>baz</foo><foo2>bar2</foo2>';
       assert.equal(result, expectedResult);
     });
@@ -147,7 +147,7 @@ describe('jstoxml', () => {
           }
         }
       ];
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo><foo>baz</foo><foo/><foo/>foo<foo a="b" c="d">bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -161,7 +161,7 @@ describe('jstoxml', () => {
         ]
       };
       const config = { indent: '  ' };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = `<foo>
   <foo>bar</foo>
   <foo>baz</foo>
@@ -181,7 +181,7 @@ describe('jstoxml', () => {
           b: 2
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo a="1" b="2">bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -197,7 +197,7 @@ describe('jstoxml', () => {
           b: 2
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo a="1" b="2"><foo>bar</foo></foo>';
       assert.equal(result, expectedResult);
     });
@@ -211,7 +211,7 @@ describe('jstoxml', () => {
           b: 2
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo a="1" b="2">3</foo>';
       assert.equal(result, expectedResult);
     });
@@ -223,7 +223,7 @@ describe('jstoxml', () => {
         foo: 'bar',
         foo2: 'bar2'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo><foo2>bar2</foo2>';
       assert.equal(result, expectedResult);
     });
@@ -236,7 +236,7 @@ describe('jstoxml', () => {
           foo2: 'bar2'
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<a foo="bar" foo2="bar2"/>';
       assert.equal(result, expectedResult);
     });
@@ -250,7 +250,7 @@ describe('jstoxml', () => {
         },
         _content: 'la dee da'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<a foo="bar" foo2="bar2">la dee da</a>';
       assert.equal(result, expectedResult);
     });
@@ -268,7 +268,7 @@ describe('jstoxml', () => {
           }
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo a="b"><bar c="d"/></foo>';
       assert.equal(result, expectedResult);
     });
@@ -281,7 +281,7 @@ describe('jstoxml', () => {
         'more more blah': null,
         baz: false
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult =
         'blah<foo>bar</foo>more blah<bar>0</bar>more more blah<baz>false</baz>';
       assert.equal(result, expectedResult);
@@ -295,7 +295,7 @@ describe('jstoxml', () => {
         }
       };
       const config = { indent: '  ' };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = `<foo>
   <foo>bar</foo>
   <foo2>bar2</foo2>
@@ -333,7 +333,7 @@ describe('jstoxml', () => {
           }
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<a><b><c><d><e><f><g><h><i><j><k><l><m><foo>bar</foo></m></l></k></j></i></h></g></f></e></d></c></b></a>';
       assert.equal(result, expectedResult);
     });
@@ -347,7 +347,7 @@ describe('jstoxml', () => {
       const config = {
         header: true
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = '<?xml version="1.0" encoding="UTF-8"?><foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -359,7 +359,7 @@ describe('jstoxml', () => {
       const config = {
         header: false
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = '<foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -368,7 +368,7 @@ describe('jstoxml', () => {
       const val = {
         foo: 'bar'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -381,7 +381,7 @@ describe('jstoxml', () => {
         header: true,
         indent: '  '
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = '<?xml version="1.0" encoding="UTF-8"?>\n<foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -393,7 +393,7 @@ describe('jstoxml', () => {
       const config = {
         header: '<?FOO BAR="123" BAZ="XX"?>'
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = '<?FOO BAR="123" BAZ="XX"?><foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -415,7 +415,7 @@ describe('jstoxml', () => {
           '&': '&amp;'
         }
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult =
         '<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>';
       assert.equal(result, expectedResult);
@@ -435,7 +435,7 @@ describe('jstoxml', () => {
           '&': '&amp;'
         }
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = '<foo a="&lt;&quot;&apos;&amp;&quot;foo&gt;"/>';
       assert.equal(result, expectedResult);
     });
@@ -446,7 +446,7 @@ describe('jstoxml', () => {
       const val = {
         _content: 'foo'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<_content>foo</_content>';
       assert.equal(result, expectedResult);
     });
@@ -461,7 +461,7 @@ describe('jstoxml', () => {
           ]
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<html ⚡ lang="en" lang="klingon"/>';
       assert.equal(result, expectedResult);
     });
@@ -472,7 +472,7 @@ describe('jstoxml', () => {
         _selfCloseTag: true,
         _content: 'bar'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -496,7 +496,7 @@ describe('jstoxml', () => {
           }
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<people><students><student><name>Joe</name></student><student><name>Jane</name></student></students><teacher name="Yoda"/></people>';
       assert.equal(result, expectedResult);
     });
@@ -510,7 +510,7 @@ describe('jstoxml', () => {
           }
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo><bar>baz</bar><bar2>baz2</bar2></foo>';
       assert.equal(result, expectedResult);
     });
@@ -522,7 +522,7 @@ describe('jstoxml', () => {
         foo: 'bar',
         foo2: 'bar2'
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo><foo2>bar2</foo2>';
       assert.equal(result, expectedResult);
     });
@@ -532,7 +532,7 @@ describe('jstoxml', () => {
         { foo: 'bar' },
         { foo: 'bar2' }
       ];
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo>bar</foo><foo>bar2</foo>';
       assert.equal(result, expectedResult);
     });
@@ -542,7 +542,7 @@ describe('jstoxml', () => {
       const val = {
         currentTime: () => date
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = `<currentTime>${date}</currentTime>`;
       assert.equal(result, expectedResult);
     });
@@ -556,7 +556,7 @@ describe('jstoxml', () => {
           c: 'd'
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo a="b" c="d">bar</foo>';
       assert.equal(result, expectedResult);
     });
@@ -567,7 +567,7 @@ describe('jstoxml', () => {
         foo: 'bar',
         text2: null
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = 'text1<foo>bar</foo>text2';
       assert.equal(result, expectedResult);
     });
@@ -583,7 +583,7 @@ describe('jstoxml', () => {
         header: false,
         indent: '  '
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = `<a>
   <foo>bar</foo>
   <foo2>bar2</foo2>
@@ -610,7 +610,7 @@ describe('jstoxml', () => {
         header: false,
         indent: '  '
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = `<ooo>
   <foo a="b">
     <bar c="d"/>
@@ -623,7 +623,7 @@ describe('jstoxml', () => {
       const val = {
         someNestedXML: () => ({ foo: 'bar' })
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<someNestedXML><foo>bar</foo></someNestedXML>';
       assert.equal(result, expectedResult);
     });
@@ -663,7 +663,7 @@ describe('jstoxml', () => {
         header: true,
         indent: '  '
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -785,7 +785,7 @@ describe('jstoxml', () => {
         indent: '  '
       };
 
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult = `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
   <channel>
@@ -850,7 +850,7 @@ describe('jstoxml', () => {
           '&': '&amp;'
         }
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult =
         '<foo>&lt;a&gt;</foo><bar>&quot;b&quot;</bar><baz>&apos;&amp;whee&apos;</baz>';
       assert.equal(result, expectedResult);
@@ -874,7 +874,7 @@ describe('jstoxml', () => {
           '&': '&amp;'
         }
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult =
         '<foo a="http://example.com/?test=&apos;1&apos;&amp;foo=&lt;bar&gt;&amp;whee=&quot;sha&quot;" b="http://example2.com/?test=&apos;2&apos;&amp;md=&lt;5&gt;&amp;sum=&quot;sha&quot;">bar</foo>';
       assert.equal(result, expectedResult);
@@ -893,7 +893,7 @@ describe('jstoxml', () => {
           _selfCloseTag: false
         }
       ];
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<foo></foo><bar></bar>';
       assert.equal(result, expectedResult);
     });
@@ -905,7 +905,7 @@ describe('jstoxml', () => {
       const config = {
         header: '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'
       };
-      const result = jstoxml.toXML(val, config);
+      const result = toXML(val, config);
       const expectedResult =
         '<?xml version="1.0" encoding="UTF-16" standalone="yes"?><foo>bar</foo>';
       assert.equal(result, expectedResult);
@@ -920,7 +920,7 @@ describe('jstoxml', () => {
           }
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<html ⚡/>';
       assert.equal(result, expectedResult);
     });
@@ -934,7 +934,7 @@ describe('jstoxml', () => {
           ]
         }
       };
-      const result = jstoxml.toXML(val);
+      const result = toXML(val);
       const expectedResult = '<html lang="en" lang="klingon"/>';
       assert.equal(result, expectedResult);
     });

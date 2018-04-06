@@ -306,3 +306,8 @@ export const toXML = (
 
   return `${headerStr}${outputStr}`;
 };
+
+export default {
+  toXML
+};
+
