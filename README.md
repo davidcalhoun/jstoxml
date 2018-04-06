@@ -12,6 +12,9 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 ### Installation
 * npm install jstoxml
 
+### Version 1.3.0
+* restored `default` module export (#31)
+
 ### Version 1.1.0
 * Added support for attribute filtering (see Example 11b below).
 
