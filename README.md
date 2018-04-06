@@ -538,7 +538,7 @@ Output:
 ### License
 MIT
 
-[downloads-image]: https://img.shields.io/npm/dm/svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/jstoxml
-[npm-image]: https://img.shields.io/npm/dm/svg?style=flat
+[npm-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat
 
