@@ -107,10 +107,12 @@ const formatAttributes = (attributes = {}, filter) => {
  *   }
  * ]
  */
-const objToArray = (obj = {}) => (Object.keys(obj).map(key => ({
-  _name: key,
-  _content: obj[key]
-})));
+const objToArray = (obj = {}) => (Object.keys(obj).map(key => {
+  return {
+    _name: key,
+    _content: obj[key]
+  };
+}));
 
 /**
  * Determines if a value is a simple primitive type that can fit onto one line.  Needed for
@@ -187,11 +189,25 @@ export const toXML = (
       break;
     }
 
+    // Handles arrays of primitive values. (#33)
+    if (Array.isArray(_content) && _content.every(isSimpleType)) {
+      return _content.map(a => {
+        return toXML({
+          _name,
+          _content: a
+        },
+        {
+          ...config,
+          depth
+        });
+      }).join('');
+    }
+
     // Don't output private vars (such as _attrs).
     if (_name.match(PRIVATE_VARS_REGEXP)) break;
 
     // Process the nested new value and create new config.
-    const newVal = toXML(_content, { ...config, depth: depth + 1 });
+    const newVal = toXML(_content, { ...config, depth: depth + 1 }, _name);
     const newValType = getType(newVal);
     const isNewValSimple = isSimpleXML(newVal);
 
@@ -261,7 +277,7 @@ export const toXML = (
       // Fallthrough: just pass the key as the content for the new special-object.
       if (typeof outputObj._content === 'undefined') outputObj._content = obj[key];
 
-      const xml = toXML(outputObj, newConfig);
+      const xml = toXML(outputObj, newConfig, key);
 
       return xml;
     }, config);
@@ -292,6 +308,7 @@ export const toXML = (
     });
 
     outputStr = outputArr.join('');
+
     break;
   }
 

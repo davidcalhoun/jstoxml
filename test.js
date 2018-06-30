@@ -938,5 +938,37 @@ describe('toXML', () => {
       const expectedResult = '<html lang="en" lang="klingon"/>';
       assert.equal(result, expectedResult);
     });
+
+    it('issue #33: array of primitives', () => {
+      const val = {
+        x: [1, 2, 3]
+      };
+      const result = toXML(val);
+      const expectedResult = '<x>1</x><x>2</x><x>3</x>';
+      assert.equal(result, expectedResult);
+    });
+
+    it('issue #33: array of primitives 2', () => {
+      const val = {
+        a: {
+          x: [1, 2, 3]
+        }
+      };
+      const result = toXML(val);
+      const expectedResult = '<a><x>1</x><x>2</x><x>3</x></a>';
+      assert.equal(result, expectedResult);
+    });
+
+    it('issue #33: array of primitives 2 with indent', () => {
+      const val = {
+        a: {
+          x: [1, 2, 3]
+        }
+      };
+      const config = { indent: '  ' };
+      const result = toXML(val, config);
+      const expectedResult = '<a>\n  <x>1</x>\n  <x>2</x>\n  <x>3</x>\n</a>';
+      assert.equal(result, expectedResult);
+    });
   });
 });
