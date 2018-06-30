@@ -207,7 +207,7 @@ export const toXML = (
     if (_name.match(PRIVATE_VARS_REGEXP)) break;
 
     // Process the nested new value and create new config.
-    const newVal = toXML(_content, { ...config, depth: depth + 1 }, _name);
+    const newVal = toXML(_content, { ...config, depth: depth + 1 });
     const newValType = getType(newVal);
     const isNewValSimple = isSimpleXML(newVal);
 
