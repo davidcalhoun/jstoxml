@@ -190,7 +190,7 @@ export const toXML = (
     }
 
     // Handles arrays of primitive values. (#33)
-    if (Array.isArray(_content) && _content.every(isSimpleType)) {
+    if (Array.isArray(_content) &&( _content.every(isSimpleType)||_content.every(val=>getType(val)==='Object'))) {
       return _content.map(a => {
         return toXML({
           _name,
