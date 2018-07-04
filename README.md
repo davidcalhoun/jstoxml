@@ -14,6 +14,9 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Changelog
 
+#### Version 1.4.2
+* support for handling arrays of primitives, instead of simply concatenating (#33)
+
 #### Version 1.3.0
 * restored `default` module export (#31)
 
