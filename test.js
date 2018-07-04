@@ -970,5 +970,62 @@ describe('toXML', () => {
       const expectedResult = '<a>\n  <x>1</x>\n  <x>2</x>\n  <x>3</x>\n</a>';
       assert.equal(result, expectedResult);
     });
+    it('issue #33: array of objects', ()=>{
+      const val = {
+        a: {
+          x: [{b:1,c:2},{d:3,e:4},{f:5,g:6}]
+        }
+      }
+      const result = toXML(val);
+      const expectedResult = '<a><x><b>1</b><c>2</c></x><x><d>3</d><e>4</e></x><x><f>5</f><g>6</g></x></a>'
+    });
+    it('issue #33: array of objects jstoxml format', () => {
+      const val = {
+        a: [
+          {
+            _name: 'foo',
+            _content: '1',
+          },
+          {
+            _name: 'foo',
+            _content: '2',
+          }
+        ]
+      };
+      const result = toXML(val);
+      const expectedResult = '<a><foo>1</foo><foo>2</foo></a>';
+      assert.equal(result, expectedResult);
+    });
+    it('issue #34: array of array', () => {
+      const val =  {
+        Response: [
+          [
+            {
+              _name: 'Play',
+              _content: 'first sound'
+            },
+            {
+              _name: 'Play',
+              _content: 'second sound'
+            }
+          ]
+        ]
+      };
+      const result = toXML(val);
+      const expectedResult = '<Response><Play>first sound</Play><Play>second sound</Play></Response>';
+      assert.equal(result, expectedResult);
+    });
+    it('issue #34', () => {
+      const val =  {t:[{foo: 'bar'},{foo: 'bar2'}]};
+      const result = toXML(val);
+      const expectedResult = '<t><foo>bar</foo><foo>bar2</foo></t>';
+      assert.equal(result, expectedResult);
+    });
+    it('issue #34', () => {
+      const val =  {t:[{_name: "foo", _content: 'bar'},{_name: "foo", _content: 'bar2'}]};
+      const result = toXML(val);
+      const expectedResult = '<t><foo>bar</foo><foo>bar2</foo></t>';
+      assert.equal(result, expectedResult);
+    });
   });
 });

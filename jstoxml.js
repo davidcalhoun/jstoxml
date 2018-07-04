@@ -115,15 +115,23 @@ const objToArray = (obj = {}) => (Object.keys(obj).map(key => {
 }));
 
 /**
+ * Determines if a value is a primitive JavaScript value (not including Symbol).
+ * Example:
+ * isPrimitive(4);
+ * -> true
+ */
+const PRIMITIVE_TYPES = [STRING, NUMBER, BOOLEAN];
+const isPrimitive = val => PRIMITIVE_TYPES.includes(getType(val));
+
+/**
  * Determines if a value is a simple primitive type that can fit onto one line.  Needed for
  * determining any needed indenting and line breaks.
  * Example:
  * isSimpleType(new Date());
  * -> true
  */
-const SIMPLE_TYPES = [STRING, NUMBER, BOOLEAN, DATE, SPECIAL_OBJECT];
+const SIMPLE_TYPES = [...PRIMITIVE_TYPES, DATE, SPECIAL_OBJECT];
 const isSimpleType = val => SIMPLE_TYPES.includes(getType(val));
-
 /**
  * Determines if an XML string is a simple primitive, or contains nested data.
  * Example:
@@ -190,7 +198,7 @@ export const toXML = (
     }
 
     // Handles arrays of primitive values. (#33)
-    if (Array.isArray(_content) && _content.every(isSimpleType)) {
+    if (Array.isArray(_content) && _content.every(isPrimitive)) {
       return _content.map(a => {
         return toXML({
           _name,
