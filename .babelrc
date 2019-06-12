@@ -1,9 +1,15 @@
 {
-  "presets": [
-    "es2015"
-  ],
   "plugins": [
-    "transform-object-rest-spread",
-    "transform-es2015-modules-umd"
+    "@babel/plugin-transform-modules-umd"
+  ],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "chrome": "30"
+        }
+      }
+    ]
   ]
 }
