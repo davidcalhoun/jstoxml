@@ -41,8 +41,11 @@ First you'll want to require jstoxml in your script, and assign the result to th
 // Node
 const { toXML } = require('jstoxml');
 
-// Browser
+// Browser (with the help of something like Webpack or Rollup)
 import { toXML } from 'jstoxml';
+
+// Browser global fallback (requires no bundler)
+var toXML = window.jstoxml.toXML;
 ```
 
 #### Example 1: Simple object
