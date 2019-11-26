@@ -29,6 +29,11 @@
     "@babel/core": "^7.6.2",
     "@babel/plugin-transform-modules-umd": "^7.2.0",
     "@babel/preset-env": "^7.6.2",
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.16.0",
     "mocha": "^6.2.1",
     "uglify-es": "^3.3.9"
   }
