@@ -20,7 +20,11 @@
   "scripts": {
     "dist": "./dist.sh",
     "prepare": "./dist.sh",
-    "test": "rm -rf dist && ./dist.sh && mocha test.js"
+    "test": "rm -rf dist && ./dist.sh && mocha test.js",
+    "patch": "npm version patch && npm run npm-publish",
+    "minor": "npm version minor && npm run npm-publish",
+    "major": "npm version major && npm run npm-publish",
+    "npm-publish": "npm publish && git push && git push --tags"
   },
   "unpkg": "dist/jstoxml-min.js",
   "dependencies": {},
