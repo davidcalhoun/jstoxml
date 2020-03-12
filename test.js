@@ -1027,5 +1027,50 @@ describe('toXML', () => {
       const expectedResult = '<t><foo>bar</foo><foo>bar2</foo></t>';
       assert.equal(result, expectedResult);
     });
+
+    it('issue #38', () => {
+      const getFooVal = iteration => iteration;
+
+      const getCurrentTime = (iterations, config) => {
+        return Array(iterations)
+          .fill(null)
+          .map((foo, index) => {
+            return toXML({
+              currentTime: {
+                foo: getFooVal.bind(null, index + 1)
+              }
+            }, config);
+          });
+      }
+
+      const val = {
+        invoice1: [
+          {
+            invoice: 'a'
+          },
+          getCurrentTime.bind(null, 3),
+          {
+            foo2: 'a'
+          }
+        ]
+      };
+      const config = {indent: '  '};
+      const result = toXML(val, config);
+
+      const expectedResult = `<invoice1>
+  <invoice>a</invoice>
+  <currentTime>
+    <foo>1</foo>
+  </currentTime>
+  <currentTime>
+    <foo>2</foo>
+  </currentTime>
+  <currentTime>
+    <foo>3</foo>
+  </currentTime>
+  <foo2>a</foo2>
+</invoice1>`;
+      assert.equal(result, expectedResult);
+    });
   });
 });
