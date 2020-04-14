@@ -24,7 +24,8 @@
     "patch": "npm version patch && npm run npm-publish",
     "minor": "npm version minor && npm run npm-publish",
     "major": "npm version major && npm run npm-publish",
-    "npm-publish": "npm publish && git push && git push --tags"
+    "npm-publish": "npm publish && git push && git push --tags",
+    "bump": "! npm outdated && npm update && npm audit fix"
   },
   "unpkg": "dist/jstoxml-min.js",
   "dependencies": {},
