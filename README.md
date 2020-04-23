@@ -1,7 +1,7 @@
 jstoxml
 =========
 [![Build Status](https://travis-ci.org/davidcalhoun/jstoxml.svg?branch=master)](https://travis-ci.org/davidcalhoun/jstoxml)
-[![Downloads][downloads-image]][npm-url]
+[![npm downloads](https://img.shields.io/npm/dm/jstoxml.svg)](https://www.npmjs.com/package/jstoxml)
 
 ### Convert JavaScript objects (and JSON) to XML (for RSS, Podcasts, etc.)
 
@@ -649,8 +649,3 @@ Output:
 
 ### License
 MIT
-
-[downloads-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/jstoxml
-[npm-image]: https://img.shields.io/npm/dm/jstoxml.svg?style=flat
-
