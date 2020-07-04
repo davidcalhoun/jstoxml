@@ -1,6 +1,6 @@
 {
   "name": "jstoxml",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "description": "Converts JavaScript/JSON to XML (for RSS, Podcasts, AMP, etc.)",
   "homepage": "http://github.com/davidcalhoun/jstoxml",
   "keywords": [
