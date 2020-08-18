@@ -14,11 +14,14 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Changelog
 
+#### Version 1.6.9
+* fix for [#40].  Previously top-level objects and arrays were concatenated without proper line breaks.
+
 #### Version 1.4.2
-* support for handling arrays of primitives, instead of simply concatenating (#33)
+* support for handling arrays of primitives, instead of simply concatenating [#33]
 
 #### Version 1.3.0
-* restored `default` module export (#31)
+* restored `default` module export [#31]
 
 #### Version 1.2.0
 * refactoring and cleanup
