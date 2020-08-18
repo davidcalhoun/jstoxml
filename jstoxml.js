@@ -173,7 +173,7 @@ export const toXML = (obj = {}, config = {}) => {
     depth = 0,
     indent,
     _isFirstItem,
-    /* _isLastItem, */
+    _isLastItem,
     attributesFilter,
     header,
     filter,
@@ -204,7 +204,8 @@ export const toXML = (obj = {}, config = {}) => {
       }
 
       // Handles arrays of primitive values. (#33)
-      if (Array.isArray(_content) && _content.every(isPrimitive)) {
+      const isArrayOfPrimitives = Array.isArray(_content) && _content.every(isPrimitive);
+      if (isArrayOfPrimitives) {
         return _content
           .map((a) => {
             return toXML(
@@ -248,7 +249,6 @@ export const toXML = (obj = {}, config = {}) => {
       const postTag = !shouldSelfClose
         ? `${newVal}${preTagCloseStr}</${_name}>`
         : "";
-
       outputStr = `${preTag}${tag}${postTag}`;
       break;
     }
@@ -304,7 +304,9 @@ export const toXML = (obj = {}, config = {}) => {
         return xml;
       }, config);
 
-      outputStr = outputArr.join("");
+      const separator = (indent && depth === 0) ? "\n" : "";
+
+      outputStr = outputArr.join(separator);
       break;
     }
 
@@ -319,7 +321,6 @@ export const toXML = (obj = {}, config = {}) => {
 
     case "array": {
       // Iterates and converts each value in an array.
-
       const outputArr = obj.map((singleVal, index) => {
         const newConfig = {
           ...config,
@@ -329,7 +330,9 @@ export const toXML = (obj = {}, config = {}) => {
         return toXML(singleVal, newConfig);
       });
 
-      outputStr = outputArr.join("");
+      const separator = (indent && depth === 0) ? "\n" : "";
+
+      outputStr = outputArr.join(separator);
 
       break;
     }

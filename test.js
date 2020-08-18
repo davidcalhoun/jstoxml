@@ -922,6 +922,9 @@ describe("toXML", () => {
       assert.equal(result, expectedResult);
     });
 
+  });
+
+  describe("issues", () => {
     it("issue #33: array of primitives", () => {
       const val = {
         x: [1, 2, 3],
@@ -1070,5 +1073,64 @@ describe("toXML", () => {
 </invoice1>`;
       assert.equal(result, expectedResult);
     });
+
+    it("issue #40 forced separator, no indent", () => {
+      const val = [
+        {a: "A Value"},
+        '\n',
+        {b: "B Value"}
+      ];
+      const result = toXML(val);
+      const expectedResult = `<a>A Value</a>
+<b>B Value</b>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("issue #40 array with indent", () => {
+      const val = [
+        {a: "A Value"},
+        {b: "B Value"}
+      ];
+      const result = toXML(val, {indent: '  '});
+      const expectedResult = `<a>A Value</a>
+<b>B Value</b>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("issue #40 array without indent", () => {
+      const val = [
+        {a: "A Value"},
+        {b: "B Value"}
+      ];
+      const result = toXML(val);
+      const expectedResult = `<a>A Value</a><b>B Value</b>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("issue #40 object with indent", () => {
+      const val = {
+        a: "A Value",
+        b: "B Value"
+      };
+      const result = toXML(val, {indent: '  '});
+      const expectedResult = `<a>A Value</a>
+<b>B Value</b>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("issue #40 object without indent", () => {
+      const val = {
+        a: "A Value",
+        b: "B Value"
+      };
+      const result = toXML(val);
+      const expectedResult = `<a>A Value</a><b>B Value</b>`;
+      assert.equal(result, expectedResult);
+    });
   });
 });
+
+
+
+
+
