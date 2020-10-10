@@ -84,30 +84,6 @@ describe("toXML", () => {
         "<foo>true</foo><bar/><foo2>false</foo2><ok>This is ok</ok><ok2>false</ok2><ok3>true</ok3>";
       assert.equal(result, expectedResult);
     });
-
-    it("issue 4a", () => {
-      const val = {
-        foo: 4,
-        bar: "&",
-      };
-      const result = toXML(val);
-      const expectedResult = "<foo>4</foo><bar>&</bar>";
-      assert.equal(result, expectedResult);
-    });
-
-    it("issue 4b", () => {
-      const val = {
-        foo: "&",
-      };
-      const config = {
-        filter: {
-          "&": "&amp;",
-        },
-      };
-      const result = toXML(val, config);
-      const expectedResult = "<foo>&amp;</foo>";
-      assert.equal(result, expectedResult);
-    });
   });
 
   describe("arrays", () => {
@@ -426,6 +402,36 @@ describe("toXML", () => {
       const expectedResult = '<foo a="&lt;&quot;&apos;&amp;&quot;foo&gt;"/>';
       assert.equal(result, expectedResult);
     });
+
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+    };
+
+    Object.entries(entities).forEach(([entity, entityEncoded]) => {
+      it(`filters '${entity}' entities by default`, () => {
+        const val = {
+          _name: "foo",
+          _attrs: { a: `aaa ${entity} bbb` },
+          _content: `foo ${entity} bar`,
+        };
+        const result = toXML(val);
+        const expectedResult = `<foo a="aaa ${entityEncoded} bbb">foo ${entityEncoded} bar</foo>`;
+        assert.equal(result, expectedResult);
+      });
+    });
+
+    it("does not double encode", () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: "baz &amp; bat" },
+        _content: "foo &amp; bar",
+      };
+      const result = toXML(val);
+      const expectedResult = '<foo a="baz &amp; bat">foo &amp; bar</foo>';
+      assert.equal(result, expectedResult);
+    });
   });
 
   describe("misc", () => {
@@ -444,8 +450,19 @@ describe("toXML", () => {
           _attrs: [{ "⚡": true }, { lang: "en" }, { lang: "klingon" }],
         },
       };
-      const result = toXML(val);
+      const result = toXML(val, { attributesFilter: {} });
       const expectedResult = '<html ⚡ lang="en" lang="klingon"/>';
+      assert.equal(result, expectedResult);
+    });
+
+    it("outputs emoji attributes 2", () => {
+      const val = {
+        html: {
+          _attrs: { "⚡": true, lang: "en" },
+        },
+      };
+      const result = toXML(val, { attributesFilter: {} });
+      const expectedResult = '<html ⚡ lang="en"/>';
       assert.equal(result, expectedResult);
     });
 
@@ -921,7 +938,6 @@ describe("toXML", () => {
       const expectedResult = '<html lang="en" lang="klingon"/>';
       assert.equal(result, expectedResult);
     });
-
   });
 
   describe("issues", () => {
@@ -1075,11 +1091,7 @@ describe("toXML", () => {
     });
 
     it("issue #40 forced separator, no indent", () => {
-      const val = [
-        {a: "A Value"},
-        '\n',
-        {b: "B Value"}
-      ];
+      const val = [{ a: "A Value" }, "\n", { b: "B Value" }];
       const result = toXML(val);
       const expectedResult = `<a>A Value</a>
 <b>B Value</b>`;
@@ -1087,21 +1099,15 @@ describe("toXML", () => {
     });
 
     it("issue #40 array with indent", () => {
-      const val = [
-        {a: "A Value"},
-        {b: "B Value"}
-      ];
-      const result = toXML(val, {indent: '  '});
+      const val = [{ a: "A Value" }, { b: "B Value" }];
+      const result = toXML(val, { indent: "  " });
       const expectedResult = `<a>A Value</a>
 <b>B Value</b>`;
       assert.equal(result, expectedResult);
     });
 
     it("issue #40 array without indent", () => {
-      const val = [
-        {a: "A Value"},
-        {b: "B Value"}
-      ];
+      const val = [{ a: "A Value" }, { b: "B Value" }];
       const result = toXML(val);
       const expectedResult = `<a>A Value</a><b>B Value</b>`;
       assert.equal(result, expectedResult);
@@ -1110,9 +1116,9 @@ describe("toXML", () => {
     it("issue #40 object with indent", () => {
       const val = {
         a: "A Value",
-        b: "B Value"
+        b: "B Value",
       };
-      const result = toXML(val, {indent: '  '});
+      const result = toXML(val, { indent: "  " });
       const expectedResult = `<a>A Value</a>
 <b>B Value</b>`;
       assert.equal(result, expectedResult);
@@ -1121,7 +1127,7 @@ describe("toXML", () => {
     it("issue #40 object without indent", () => {
       const val = {
         a: "A Value",
-        b: "B Value"
+        b: "B Value",
       };
       const result = toXML(val);
       const expectedResult = `<a>A Value</a><b>B Value</b>`;
@@ -1129,8 +1135,3 @@ describe("toXML", () => {
     });
   });
 });
-
-
-
-
-
