@@ -425,11 +425,22 @@ describe("toXML", () => {
     it("does not double encode", () => {
       const val = {
         _name: "foo",
-        _attrs: { a: "baz &amp; bat" },
-        _content: "foo &amp; bar",
+        _attrs: { a: "baz &amp; &gt; &lt; bat" },
+        _content: "foo &amp; &gt; &lt; bar",
       };
       const result = toXML(val);
-      const expectedResult = '<foo a="baz &amp; bat">foo &amp; bar</foo>';
+      const expectedResult =
+        '<foo a="baz &amp; &gt; &lt; bat">foo &amp; &gt; &lt; bar</foo>';
+      assert.equal(result, expectedResult);
+    });
+
+    it("escapes quotes in attributes by default", () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: '"bat"' },
+      };
+      const result = toXML(val);
+      const expectedResult = '<foo a="&quot;bat&quot;"/>';
       assert.equal(result, expectedResult);
     });
   });
@@ -1045,18 +1056,15 @@ describe("toXML", () => {
     it("issue #38", () => {
       const getFooVal = (iteration) => iteration;
 
-      const getCurrentTime = (iterations, config) => {
+      const getCurrentTime = (iterations) => {
         return Array(iterations)
           .fill(null)
           .map((foo, index) => {
-            return toXML(
-              {
-                currentTime: {
-                  foo: getFooVal.bind(null, index + 1),
-                },
+            return {
+              currentTime: {
+                foo: getFooVal.bind(null, index + 1),
               },
-              config
-            );
+            };
           });
       };
 

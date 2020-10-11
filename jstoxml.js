@@ -36,7 +36,7 @@ const getType = (val) =>
  * -> 'foo&amp;bar'
  */
 const filterStr = (inputStr = "", filter = {}) => {
-  // Passthrough/no-op for nonstrings (e.g. number, boolean)
+  // Passthrough/no-op for nonstrings (e.g. number, boolean).
   if (typeof inputStr !== "string") {
     return inputStr;
   }
@@ -68,7 +68,6 @@ const getAttributeKeyVals = (attributes = {}, filter) => {
 
       const filteredVal = filter ? filterStr(val, filter) : val;
       const valStr = filteredVal === true ? "" : `="${filteredVal}"`;
-      console.log(222, `${key}${valStr}`, filteredVal, typeof filteredVal);
       return `${key}${valStr}`;
     });
   } else {
@@ -187,9 +186,17 @@ export const toXML = (obj = {}, config = {}) => {
     _isFirstItem,
     // _isLastItem,
     header,
-    attributesFilter = {},
-    filter = {},
+    attributesFilter: rawAttributesFilter = {},
+    filter: rawFilter = {},
   } = config;
+
+  const attributesFilter = {
+    ...defaultEntityFilter,
+    ...{ '"': "&quot;" },
+    ...rawAttributesFilter,
+  };
+
+  const filter = { ...defaultEntityFilter, ...rawFilter };
 
   // Determine indent string based on depth.
   const indentStr = getIndentStr(indent, depth);
@@ -254,11 +261,7 @@ export const toXML = (obj = {}, config = {}) => {
           ? valIsEmpty && obj._selfCloseTag
           : valIsEmpty;
       const selfCloseStr = shouldSelfClose ? "/" : "";
-      const attributesString = formatAttributes(obj._attrs, {
-        ...defaultEntityFilter,
-        ...{ '"': "&quot;" },
-        ...attributesFilter,
-      });
+      const attributesString = formatAttributes(obj._attrs, attributesFilter);
       const tag = `<${_name}${attributesString}${selfCloseStr}>`;
 
       // Post-tag output (closing tag, indent, line breaks).
@@ -356,7 +359,7 @@ export const toXML = (obj = {}, config = {}) => {
 
     // number, string, boolean, date, null, etc
     default: {
-      outputStr = filterStr(obj, { ...defaultEntityFilter, ...filter });
+      outputStr = filterStr(obj, filter);
       break;
     }
   }
