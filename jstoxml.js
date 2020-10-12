@@ -36,7 +36,15 @@ const getType = (val) =>
  * -> 'foo&amp;bar'
  */
 const filterStr = (inputStr = "", filter = {}) => {
-  const regexp = new RegExp(`(${Object.keys(filter).join("|")})`, "g");
+  // Passthrough/no-op for nonstrings (e.g. number, boolean).
+  if (typeof inputStr !== "string") {
+    return inputStr;
+  }
+
+  const regexp = new RegExp(
+    `(${Object.keys(filter).join("|")})(?!amp;|gt;|lt;)`,
+    "g"
+  );
 
   return String(inputStr).replace(
     regexp,
@@ -51,10 +59,8 @@ const filterStr = (inputStr = "", filter = {}) => {
  * [ { ⚡: true }, { foo: 'bar' } ] -> '⚡ foo="bar"'
  */
 const getAttributeKeyVals = (attributes = {}, filter) => {
-  const isArray = Array.isArray(attributes);
-
   let keyVals = [];
-  if (isArray) {
+  if (Array.isArray(attributes)) {
     // Array containing complex objects and potentially duplicate attributes.
     keyVals = attributes.map((attr) => {
       const key = Object.keys(attr)[0];
@@ -156,9 +162,8 @@ const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
   if (!shouldOutputHeader) return "";
 
   const shouldUseDefaultHeader = typeof header === BOOLEAN;
-  return `${shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header}${
-    indent ? "\n" : ""
-  }`;
+  return `${shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header}${indent ? "\n" : ""
+    }`;
 };
 
 /**
@@ -167,17 +172,32 @@ const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
  * toXML({ foo: 'bar' });
  * -> <foo>bar</foo>
  */
+const defaultEntityFilter = {
+  "<": "&lt;",
+  ">": "&gt;",
+  "&": "&amp;",
+};
 export const toXML = (obj = {}, config = {}) => {
   const {
     // Tree depth
     depth = 0,
     indent,
     _isFirstItem,
-    _isLastItem,
-    attributesFilter,
+    // _isLastItem,
     header,
-    filter,
+    attributesFilter: rawAttributesFilter = {},
+    filter: rawFilter = {},
   } = config;
+
+  const shouldTurnOffAttributesFilter = typeof rawAttributesFilter === 'boolean' && !rawAttributesFilter;
+  const attributesFilter = shouldTurnOffAttributesFilter ? {} : {
+    ...defaultEntityFilter,
+    ...{ '"': "&quot;" },
+    ...rawAttributesFilter,
+  };
+
+  const shouldTurnOffFilter = typeof rawFilter === 'boolean' && !rawFilter;
+  const filter = shouldTurnOffFilter ? {} : { ...defaultEntityFilter, ...rawFilter };
 
   // Determine indent string based on depth.
   const indentStr = getIndentStr(indent, depth);
@@ -204,7 +224,8 @@ export const toXML = (obj = {}, config = {}) => {
       }
 
       // Handles arrays of primitive values. (#33)
-      const isArrayOfPrimitives = Array.isArray(_content) && _content.every(isPrimitive);
+      const isArrayOfPrimitives =
+        Array.isArray(_content) && _content.every(isPrimitive);
       if (isArrayOfPrimitives) {
         return _content
           .map((a) => {
@@ -304,7 +325,7 @@ export const toXML = (obj = {}, config = {}) => {
         return xml;
       }, config);
 
-      const separator = (indent && depth === 0) ? "\n" : "";
+      const separator = indent && depth === 0 ? "\n" : "";
 
       outputStr = outputArr.join(separator);
       break;
@@ -330,7 +351,7 @@ export const toXML = (obj = {}, config = {}) => {
         return toXML(singleVal, newConfig);
       });
 
-      const separator = (indent && depth === 0) ? "\n" : "";
+      const separator = indent && depth === 0 ? "\n" : "";
 
       outputStr = outputArr.join(separator);
 
