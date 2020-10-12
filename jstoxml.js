@@ -162,9 +162,8 @@ const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
   if (!shouldOutputHeader) return "";
 
   const shouldUseDefaultHeader = typeof header === BOOLEAN;
-  return `${shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header}${
-    indent ? "\n" : ""
-  }`;
+  return `${shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header}${indent ? "\n" : ""
+    }`;
 };
 
 /**
@@ -190,13 +189,15 @@ export const toXML = (obj = {}, config = {}) => {
     filter: rawFilter = {},
   } = config;
 
-  const attributesFilter = {
+  const shouldTurnOffAttributesFilter = typeof rawAttributesFilter === 'boolean' && !rawAttributesFilter;
+  const attributesFilter = shouldTurnOffAttributesFilter ? {} : {
     ...defaultEntityFilter,
     ...{ '"': "&quot;" },
     ...rawAttributesFilter,
   };
 
-  const filter = { ...defaultEntityFilter, ...rawFilter };
+  const shouldTurnOffFilter = typeof rawFilter === 'boolean' && !rawFilter;
+  const filter = shouldTurnOffFilter ? {} : { ...defaultEntityFilter, ...rawFilter };
 
   // Determine indent string based on depth.
   const indentStr = getIndentStr(indent, depth);

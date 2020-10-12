@@ -14,6 +14,12 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Changelog
 
+#### Version 2.0.0 (breaking)
+* New: automatic entity escaping for `&`, `<`, and `>` characters.  In addition, quotes `"` in attributes are also escaped (see [#41](/../../issues/41)).  Prior to this, users [had to provide their own filter manually](https://github.com/davidcalhoun/jstoxml/issues/4#issuecomment-19165730).  Note that `jstoxml` makes an effort not to escape entities that appear to have already been encoded, to prevent double-encoding issues.
+  * E.g. `toXML({ foo: '1 < 2 & 2 > 1' });  // -> "<foo>1 &lt; 2 &amp; 2 &gt; 1</foo>"`
+  * To restore the default behavior from `v1.x.x`, simply pass in `false` to `filter` and `attributesFilter` options:
+    `toXML({ foo: '1 < 2 & 2 > 1' }, { filter: false, attributesFilter: false }); // -> <foo>1 < 2 & 2 > 1</foo>`
+
 #### Version 1.6.9
 * fix for [#40](/../../issues/40).  Previously top-level objects and arrays were concatenated without proper line breaks.
 

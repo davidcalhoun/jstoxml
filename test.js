@@ -422,6 +422,15 @@ describe("toXML", () => {
       });
     });
 
+    it(`filters entities by default 2`, () => {
+      const val = {
+        foo: '1 < 2 & 2 > 1'
+      };
+      const result = toXML(val);
+      const expectedResult = `<foo>1 &lt; 2 &amp; 2 &gt; 1</foo>`;
+      assert.equal(result, expectedResult);
+    });
+
     it("does not double encode", () => {
       const val = {
         _name: "foo",
@@ -453,6 +462,39 @@ describe("toXML", () => {
       };
       const result = toXML(val);
       const expectedResult = '<foo a="&quot;bat&quot;"/>';
+      assert.equal(result, expectedResult);
+    });
+
+    it(`turns off attributes filter`, () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: "baz & < > \" bat" },
+        _content: "foo & < > bar",
+      };
+      const result = toXML(val, { attributesFilter: false });
+      const expectedResult = `<foo a="baz & < > \" bat">foo &amp; &lt; &gt; bar</foo>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it(`turns off filter`, () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: "baz & < > \" bat" },
+        _content: "foo & < > bar",
+      };
+      const result = toXML(val, { filter: false });
+      const expectedResult = `<foo a="baz &amp; &lt; &gt; &quot; bat">foo & < > bar</foo>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it(`turns off both filter and attributesFilter`, () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: "baz & < > \" bat" },
+        _content: "foo & < > bar",
+      };
+      const result = toXML(val, { filter: false, attributesFilter: false });
+      const expectedResult = `<foo a="baz & < > \" bat">foo & < > bar</foo>`;
       assert.equal(result, expectedResult);
     });
   });
