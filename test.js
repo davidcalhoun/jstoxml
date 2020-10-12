@@ -434,6 +434,18 @@ describe("toXML", () => {
       assert.equal(result, expectedResult);
     });
 
+    it("does not double encode 2", () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: "baz &&amp; &&gt; &&lt; bat" },
+        _content: "foo &&amp; &&gt; &&lt; bar",
+      };
+      const result = toXML(val);
+      const expectedResult =
+        '<foo a="baz &amp;&amp; &amp;&gt; &amp;&lt; bat">foo &amp;&amp; &amp;&gt; &amp;&lt; bar</foo>';
+      assert.equal(result, expectedResult);
+    });
+
     it("escapes quotes in attributes by default", () => {
       const val = {
         _name: "foo",
