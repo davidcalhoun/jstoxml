@@ -42,7 +42,7 @@ const filterStr = (inputStr = "", filter = {}) => {
   }
 
   const regexp = new RegExp(
-    `(${Object.keys(filter).join("|")})(?!amp;|gt;|lt;)`,
+    `(${Object.keys(filter).join("|")})(?!(\\w|#)*;)`,
     "g"
   );
 

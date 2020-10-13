@@ -455,6 +455,18 @@ describe("toXML", () => {
       assert.equal(result, expectedResult);
     });
 
+    it("does not double encode 3", () => {
+      const val = {
+        _name: "foo",
+        _attrs: { a: "&cent; &#162; &euro; &#8364; &eu ro;" },
+        _content: "&cent; &#162; &euro; &#8364; &eu ro;",
+      };
+      const result = toXML(val);
+      const expectedResult =
+        '<foo a="&cent; &#162; &euro; &#8364; &amp;eu ro;">&cent; &#162; &euro; &#8364; &amp;eu ro;</foo>';
+      assert.equal(result, expectedResult);
+    });
+
     it("escapes quotes in attributes by default", () => {
       const val = {
         _name: "foo",
