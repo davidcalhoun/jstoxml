@@ -30,12 +30,12 @@
   "unpkg": "dist/jstoxml-min.js",
   "dependencies": {},
   "devDependencies": {
-    "@babel/cli": "^7.12.8",
-    "@babel/core": "^7.12.9",
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
     "@babel/plugin-transform-modules-umd": "^7.12.1",
-    "@babel/preset-env": "^7.12.7",
+    "@babel/preset-env": "^7.12.10",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.14.0",
+    "eslint": "^7.15.0",
     "mocha": "^8.2.1",
     "prettier": "^2.2.1",
     "uglify-es": "^3.3.9"
