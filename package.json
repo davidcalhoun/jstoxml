@@ -33,9 +33,9 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/plugin-transform-modules-umd": "^7.12.1",
-    "@babel/preset-env": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.15.0",
+    "eslint": "^7.16.0",
     "mocha": "^8.2.1",
     "prettier": "^2.2.1",
     "uglify-es": "^3.3.9"
