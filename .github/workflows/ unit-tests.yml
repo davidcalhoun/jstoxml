@@ -1,0 +1,29 @@
+name: unit testing
+on: push
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out code from Github.
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      # Restore cache if available.
+      - name: Restore cached dependencies
+        id: dep-cache
+        uses: actions/cache@v2
+        env:
+          cache-name: jstoxml-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      # Fully install from scratch when no cache is available.
+      - name: Install dependencies from scratch (cache miss only)
+        if: steps.dep-cache.outputs.cache-hit != 'true'
+        run: npm i
+      - name: Unit tests
+        run: npm test
+        shell: bash
