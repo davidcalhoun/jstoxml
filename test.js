@@ -360,6 +360,28 @@ describe("toXML", () => {
       const expectedResult = '<?FOO BAR="123" BAZ="XX"?><foo>bar</foo>';
       assert.equal(result, expectedResult);
     });
+
+    it("custom header 2", () => {
+      const val = [
+        {
+          row: 'bar'
+        },
+        {
+          row: 'bar2'
+        }
+      ];
+      const config = {
+        header: '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>',
+        indent: ' '
+      };
+
+      const result = toXML(val, config);
+
+      const expectedResult = `<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<row>bar</row>
+<row>bar2</row>`;
+      assert.equal(result, expectedResult);
+    })
   });
 
   describe("filtering", () => {

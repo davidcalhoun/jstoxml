@@ -158,12 +158,12 @@ const isSimpleXML = (xmlStr) => !xmlStr.match("<");
 const DEFAULT_XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
 const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
   const shouldOutputHeader = header && isOutputStart;
-
   if (!shouldOutputHeader) return "";
 
   const shouldUseDefaultHeader = typeof header === BOOLEAN;
-  return `${shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header}${indent ? "\n" : ""
-    }`;
+  // return `${shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header}${indent ? "\n" : ""
+  //   }`;
+  return shouldUseDefaultHeader ? DEFAULT_XML_HEADER : header;
 };
 
 /**
@@ -184,6 +184,7 @@ export const toXML = (obj = {}, config = {}) => {
     indent,
     _isFirstItem,
     // _isLastItem,
+    _isOutputStart = true,
     header,
     attributesFilter: rawAttributesFilter = {},
     filter: rawFilter = {},
@@ -204,11 +205,10 @@ export const toXML = (obj = {}, config = {}) => {
 
   // For branching based on value type.
   const valType = getType(obj);
-  const isSimple = isSimpleType(obj);
 
-  // Determine if this is the start of the output.  Needed for header and indenting.
-  const isOutputStart =
-    depth === 0 && (isSimple || (!isSimple && _isFirstItem));
+  const headerStr = getHeaderString({ header, indent, depth, isOutputStart: _isOutputStart });
+
+  const isOutputStart = _isOutputStart && !headerStr && _isFirstItem && depth === 0;
 
   let outputStr = "";
   switch (valType) {
@@ -227,7 +227,7 @@ export const toXML = (obj = {}, config = {}) => {
       const isArrayOfPrimitives =
         Array.isArray(_content) && _content.every(isPrimitive);
       if (isArrayOfPrimitives) {
-        return _content
+        const primitives = _content
           .map((a) => {
             return toXML(
               {
@@ -237,22 +237,23 @@ export const toXML = (obj = {}, config = {}) => {
               {
                 ...config,
                 depth,
+                _isOutputStart: false
               }
             );
-          })
-          .join("");
+          });
+        return primitives.join('');
       }
 
       // Don't output private vars (such as _attrs).
       if (_name.match(PRIVATE_VARS_REGEXP)) break;
 
       // Process the nested new value and create new config.
-      const newVal = toXML(_content, { ...config, depth: depth + 1 });
+      const newVal = toXML(_content, { ...config, depth: depth + 1, _isOutputStart: isOutputStart });
       const newValType = getType(newVal);
       const isNewValSimple = isSimpleXML(newVal);
 
       // Pre-tag output (indent and line breaks).
-      const preIndentStr = indent && !isOutputStart ? "\n" : "";
+      const preIndentStr = (indent && !isOutputStart) ? "\n" : "";
       const preTag = `${preIndentStr}${indentStr}`;
 
       // Tag output.
@@ -283,6 +284,7 @@ export const toXML = (obj = {}, config = {}) => {
           ...config,
           _isFirstItem: index === 0,
           _isLastItem: index + 1 === keys.length,
+          _isOutputStart: isOutputStart
         };
 
         const outputObj = { _name: key };
@@ -325,14 +327,12 @@ export const toXML = (obj = {}, config = {}) => {
         return xml;
       }, config);
 
-      const separator = indent && depth === 0 ? "\n" : "";
-
-      outputStr = outputArr.join(separator);
+      outputStr = outputArr.join('');
       break;
     }
 
     case "function": {
-      // Executes a user-defined function and return output.
+      // Executes a user-defined function and returns output.
 
       const fnResult = obj(config);
 
@@ -347,13 +347,12 @@ export const toXML = (obj = {}, config = {}) => {
           ...config,
           _isFirstItem: index === 0,
           _isLastItem: index + 1 === obj.length,
+          _isOutputStart: isOutputStart
         };
         return toXML(singleVal, newConfig);
       });
 
-      const separator = indent && depth === 0 ? "\n" : "";
-
-      outputStr = outputArr.join(separator);
+      outputStr = outputArr.join('');
 
       break;
     }
@@ -364,8 +363,6 @@ export const toXML = (obj = {}, config = {}) => {
       break;
     }
   }
-
-  const headerStr = getHeaderString({ header, indent, depth, isOutputStart });
 
   return `${headerStr}${outputStr}`;
 };
