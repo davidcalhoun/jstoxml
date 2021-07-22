@@ -720,6 +720,8 @@ Output:
 
 ```
 <!-- Some important comment -->
+<!-- This is a very long comment! -->
+<!-- More important exposition! -->
 <a>
     <b>1</b>
     <b>2</b>
