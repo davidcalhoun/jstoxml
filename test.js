@@ -1287,4 +1287,40 @@ describe("toXML", () => {
       assert.equal(result, expectedResult);
     });
   });
+
+  it("comments 5", () => {
+    const val = {
+      _comment: 'Some important comment',
+      a: {
+        b: [1, 2, 3]
+      }
+    };
+    const result = toXML(val, { indent: '    ' });
+    const expectedResult = `<!-- Some important comment -->
+<a>
+    <b>1</b>
+    <b>2</b>
+    <b>3</b>
+</a>`;
+    assert.equal(result, expectedResult);
+  });
+
+  it("comments 6", () => {
+    const val = [
+      { _comment: 'Some important comment' },
+      { _comment: 'This is a very long comment!' },
+      { _comment: 'More important exposition!' },
+      { a: { b: [1, 2, 3] } }
+    ];
+    const result = toXML(val, { indent: '    ' });
+    const expectedResult = `<!-- Some important comment -->
+<!-- This is a very long comment! -->
+<!-- More important exposition! -->
+<a>
+    <b>1</b>
+    <b>2</b>
+    <b>3</b>
+</a>`;
+    assert.equal(result, expectedResult);
+  });
 });

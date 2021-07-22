@@ -1,7 +1,10 @@
 # Changelog
 
+#### Version 2.2.0
+* Initial support for XML comments ([#47](https://github.com/davidcalhoun/jstoxml/issues/47))
+
 #### Version 2.1.1
-* Fix for [#48] (various 0-depth issues, bad "is output start" logic)
+* Fix for [#48](https://github.com/davidcalhoun/jstoxml/issues/48) (various 0-depth issues, bad "is output start" logic)
 
 #### Version 2.0.0 (breaking)
 
@@ -12,7 +15,7 @@
 
 #### Version 1.6.9
 
-- fix for [#40]. Previously top-level objects and arrays were concatenated without proper line breaks.
+- fix for [#40](https://github.com/davidcalhoun/jstoxml/issues/47). Previously top-level objects and arrays were concatenated without proper line breaks.
 
 #### Version 1.4.2
 
