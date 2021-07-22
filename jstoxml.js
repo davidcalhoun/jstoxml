@@ -256,6 +256,12 @@ export const toXML = (obj = {}, config = {}) => {
       const preIndentStr = (indent && !isOutputStart) ? "\n" : "";
       const preTag = `${preIndentStr}${indentStr}`;
 
+      // Special handling for comments, preserving preceding line breaks/indents.
+      if (_name === '_comment') {
+        outputStr += `${preTag}<!-- ${_content} -->`;
+        break;
+      }
+
       // Tag output.
       const valIsEmpty = newValType === "undefined" || newVal === "";
       const shouldSelfClose =
@@ -271,7 +277,7 @@ export const toXML = (obj = {}, config = {}) => {
       const postTag = !shouldSelfClose
         ? `${newVal}${preTagCloseStr}</${_name}>`
         : "";
-      outputStr = `${preTag}${tag}${postTag}`;
+      outputStr += `${preTag}${tag}${postTag}`;
       break;
     }
 

@@ -1229,5 +1229,98 @@ describe("toXML", () => {
       const expectedResult = `<a>A Value</a><b>B Value</b>`;
       assert.equal(result, expectedResult);
     });
+
+    it("comments 1", () => {
+      const val = {
+        _comment: "test comment",
+        a: "foo"
+      };
+      const result = toXML(val);
+      const expectedResult = `<!-- test comment --><a>foo</a>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("comments 2", () => {
+      const val = {
+        _comment: "test comment",
+        a: "foo"
+      };
+      const result = toXML(val, { indent: '    ' });
+      const expectedResult = `<!-- test comment -->
+<a>foo</a>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("comments 3", () => {
+      const val = {
+        _comment: "comment 1",
+        b: {
+          _comment: "comment 2",
+          a: "foo"
+        }
+      };
+      const result = toXML(val, { indent: '    ' });
+      const expectedResult = `<!-- comment 1 -->
+<b>
+    <!-- comment 2 -->
+    <a>foo</a>
+</b>`;
+      assert.equal(result, expectedResult);
+    });
+
+    it("comments 4", () => {
+      const val = {
+        _comment: "comment 1",
+        b: [
+          { _comment: "comment 2" },
+          { _comment: "comment 3" },
+          { a: "foo" }
+        ]
+      };
+      const result = toXML(val, { indent: '    ' });
+      const expectedResult = `<!-- comment 1 -->
+<b>
+    <!-- comment 2 -->
+    <!-- comment 3 -->
+    <a>foo</a>
+</b>`;
+      assert.equal(result, expectedResult);
+    });
+  });
+
+  it("comments 5", () => {
+    const val = {
+      _comment: 'Some important comment',
+      a: {
+        b: [1, 2, 3]
+      }
+    };
+    const result = toXML(val, { indent: '    ' });
+    const expectedResult = `<!-- Some important comment -->
+<a>
+    <b>1</b>
+    <b>2</b>
+    <b>3</b>
+</a>`;
+    assert.equal(result, expectedResult);
+  });
+
+  it("comments 6", () => {
+    const val = [
+      { _comment: 'Some important comment' },
+      { _comment: 'This is a very long comment!' },
+      { _comment: 'More important exposition!' },
+      { a: { b: [1, 2, 3] } }
+    ];
+    const result = toXML(val, { indent: '    ' });
+    const expectedResult = `<!-- Some important comment -->
+<!-- This is a very long comment! -->
+<!-- More important exposition! -->
+<a>
+    <b>1</b>
+    <b>2</b>
+    <b>3</b>
+</a>`;
+    assert.equal(result, expectedResult);
   });
 });
