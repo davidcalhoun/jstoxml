@@ -1,5 +1,8 @@
 # Changelog
 
+#### Version 2.1.1
+* Fix for #48 (various 0-depth issues, bad "is output start" logic)
+
 #### Version 2.0.0 (breaking)
 
 - New: automatic entity escaping for `&`, `<`, and `>` characters. In addition, quotes `"` in attributes are also escaped (see [#41](/../../issues/41)). Prior to this, users [had to provide their own filter manually](https://github.com/davidcalhoun/jstoxml/issues/4#issuecomment-19165730). Note that `jstoxml` makes an effort not to escape entities that appear to have already been encoded, to prevent double-encoding issues.
