@@ -14,21 +14,14 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Configuration options
 
-| Key name | Type | Default | Description |
-
-| --------------- | --------------- | --------------- | --------------- |
-
-| indent | string | `''` | Indent string, repeated n times (n=tree depth). |
-
-| header | string or boolean | `''` | XML header. When true outputs a simple XML 1.0 UTF-8 encoding. This can also be set to any custom string. |
-
-| attributeReplacements | object | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | Attribute strings to replace. |
-
-| attributeFilter | function | | Filters out attributes based on user-supplied function. |
-
-| attributeExplicitTrue | boolean | `false` | When true explicitly outputs `true` attribute value strings. |
-
-| contentReplacements | object | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | Content strings to replace. |
+| Key name              | Type              | Default                                                      | Description                                                                                               |
+| --------------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| indent                | string            | `''`                                                         | Indent string, repeated n times (n=tree depth).                                                           |
+| header                | string or boolean | `''`                                                         | XML header. When true outputs a simple XML 1.0 UTF-8 encoding. This can also be set to any custom string. |
+| attributeReplacements | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | Attribute strings to replace.                                                                             |
+| attributeFilter       | function          |                                                              | Filters out attributes based on user-supplied function.                                                   |
+| attributeExplicitTrue | boolean           | `false`                                                      | When true explicitly outputs `true` attribute value strings.                                              |
+| contentReplacements   | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | Content strings to replace.                                                                               |
 
 ### Changelog
 
