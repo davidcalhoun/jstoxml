@@ -499,7 +499,7 @@ describe('toXML', () => {
                 _content: 'foo & < > bar'
             };
             const result = toXML(val, { attributeReplacements: false });
-            const expectedResult = `<foo a="baz & < > \" bat">foo &amp; &lt; &gt; bar</foo>`;
+            const expectedResult = `<foo a="baz & < > " bat">foo &amp; &lt; &gt; bar</foo>`;
             assert.equal(result, expectedResult);
         });
 
@@ -521,7 +521,7 @@ describe('toXML', () => {
                 _content: 'foo & < > bar'
             };
             const result = toXML(val, { contentReplacements: false, attributeReplacements: false });
-            const expectedResult = `<foo a="baz & < > \" bat">foo & < > bar</foo>`;
+            const expectedResult = `<foo a="baz & < > " bat">foo & < > bar</foo>`;
             assert.equal(result, expectedResult);
         });
     });

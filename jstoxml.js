@@ -12,8 +12,6 @@ const DATA_TYPES = {
 
 const PRIMITIVE_TYPES = [DATA_TYPES.STRING, DATA_TYPES.NUMBER, DATA_TYPES.BOOLEAN];
 const DEFAULT_XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
-const SIMPLE_TYPES = [...PRIMITIVE_TYPES, DATA_TYPES.DATE, DATA_TYPES.JSTOXML_OBJECT];
-
 const PRIVATE_VARS = ['_selfCloseTag', '_attrs'];
 
 /**
@@ -154,7 +152,7 @@ const isSimpleXML = (xmlStr) => !xmlStr.match('<');
 /**
  * Assembles an XML header as defined by the config.
  */
-const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
+const getHeaderString = ({ header, isOutputStart }) => {
     const shouldOutputHeader = header && isOutputStart;
     if (!shouldOutputHeader) return '';
 
