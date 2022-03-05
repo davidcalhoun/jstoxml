@@ -12,7 +12,33 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 -   npm install jstoxml
 
-### Configuration options
+### Simple example
+
+```js
+import { toXML } from 'jstoxml';
+
+// toXML(content, config)
+const content = {
+    a: {
+        foo: 'bar'
+    }
+};
+const config = {
+    indent: '    '
+};
+
+toXML(content, config);
+/*
+Output:
+
+`<a>
+    <foo>bar</foo>
+</a>`
+
+*/
+```
+
+### Configuration object options (passed as second parameter to `toXML()`)
 
 | Key name              | Type              | Default                                                      | Description                                                                                               |
 | --------------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
@@ -55,7 +81,7 @@ For more changelog history, see `CHANGELOG.md`.
 
 -   See CHANGELOG.md for a full history of changes.
 
-### Examples
+### Other Examples
 
 First you'll want to require jstoxml in your script, and assign the result to the namespace variable you want to use (in this case jstoxml):
 
