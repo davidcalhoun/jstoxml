@@ -30,24 +30,22 @@ const config = {
 toXML(content, config);
 /*
 Output:
-
 `<a>
     <foo>bar</foo>
 </a>`
-
 */
 ```
 
 ### Configuration object options (passed as second parameter to `toXML()`)
 
-| Key name              | Type              | Default                                                      | Description                                                                                               |
-| --------------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| indent                | string            | `''`                                                         | Indent string, repeated n times (n=tree depth).                                                           |
-| header                | string or boolean | `''`                                                         | XML header. When true outputs a simple XML 1.0 UTF-8 encoding. This can also be set to any custom string. |
-| attributeReplacements | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | Attribute strings to replace.                                                                             |
-| attributeFilter       | function          |                                                              | Filters out attributes based on user-supplied function.                                                   |
-| attributeExplicitTrue | boolean           | `false`                                                      | When true explicitly outputs `true` attribute value strings.                                              |
-| contentReplacements   | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | Content strings to replace.                                                                               |
+| Key name              | Type              | Default                                                      | Description                                                                                                                                                                             |
+| --------------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| indent                | string            |                                                              | Indent string, repeated n times (where n=tree depth).                                                                                                                                   |
+| header                | string or boolean |                                                              | Outputs a simple XML 1.0 UTF-8 header when true. Can also be set to a custom string.                                                                                                    |
+| attributeReplacements | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML attribute value substrings to replace (e.g. `<a attributeKey="attributeValue" />`). Does not double encode HTML entities (e.g. `&lt;` is preserved and NOT converted to `&amp;lt`). |
+| attributeFilter       | function          |                                                              | Filters out attributes based on user-supplied function.                                                                                                                                 |
+| attributeExplicitTrue | boolean           | `false`                                                      | When true explicitly outputs `true` attribute value strings, e.g. `<a foo='true' />` instead of `<a foo />`.                                                                            |
+| contentReplacements   | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML content strings to replace (e.g. `<a>XML content here</a>`).                                                                                                                        |
 
 ### Changelog
 
