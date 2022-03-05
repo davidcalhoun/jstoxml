@@ -10,6 +10,10 @@ const DATA_TYPES = {
     STRING: 'string'
 };
 
+const PRIMITIVE_TYPES = [DATA_TYPES.STRING, DATA_TYPES.NUMBER, DATA_TYPES.BOOLEAN];
+const DEFAULT_XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
+const SIMPLE_TYPES = [...PRIMITIVE_TYPES, DATA_TYPES.DATE, DATA_TYPES.JSTOXML_OBJECT];
+
 const PRIVATE_VARS = ['_selfCloseTag', '_attrs'];
 
 /**
@@ -32,20 +36,31 @@ const getType = (val) =>
     typeof val;
 
 /**
+ * Determines if a string is CDATA and shouldn't be touched.
+ * @example
+ * isCDATA('<![CDATA[<b>test</b>]]>');
+ * // -> true
+ */
+const isCDATA = (str) => str.startsWith('<![CDATA[');
+
+/**
  * Replaces matching values in a string with a new value.
  * @example
  * mapStr('foo&bar', { '&': '&amp;' });
  * // -> 'foo&amp;bar'
  */
-const mapStr = (inputStr = '', replacements = {}) => {
-    // Passthrough/no-op for nonstrings (e.g. number, boolean).
-    if (typeof inputStr !== 'string') {
-        return inputStr;
+const mapStr = (input = '', replacements = {}) => {
+    if (typeof input === DATA_TYPES.STRING) {
+        if (isCDATA(input)) {
+            return input;
+        }
+
+        const regexp = new RegExp(`(${Object.keys(replacements).join('|')})(?!(\\w|#)*;)`, 'g');
+        return String(input).replace(regexp, (str, entity) => replacements[entity] || '');
     }
 
-    const regexp = new RegExp(`(${Object.keys(replacements).join('|')})(?!(\\w|#)*;)`, 'g');
-
-    return String(inputStr).replace(regexp, (str, entity) => replacements[entity] || '');
+    // Passthrough/no-op
+    return input;
 };
 
 /**
@@ -56,48 +71,30 @@ const mapStr = (inputStr = '', replacements = {}) => {
  * getAttributeKeyVals([ { ⚡: true }, { foo: 'bar' } ]);
  * // -> '⚡ foo="bar"'
  */
-const getAttributeKeyVals = (attributes = {}, replacements, filter) => {
-    let keyVals = [];
-    if (Array.isArray(attributes)) {
-        // Array containing complex objects and potentially duplicate attributes.
-        keyVals = attributes.reduce((allAttributes, attr) => {
-            const key = Object.keys(attr)[0];
-            const val = attr[key];
+const getAttributeKeyVals = (attributes = {}, replacements, filter, outputExplicitTrue) => {
+    // Normalizes between attributes as object and as array.
+    const attributesArr = Array.isArray(attributes)
+        ? attributes
+        : Object.entries(attributes).map(([key, val]) => {
+              return { [key]: val };
+          });
 
-            if (typeof filter === DATA_TYPES.FUNCTION) {
-                const shouldFilterOut = filter(key, val);
-                if (shouldFilterOut) {
-                    return allAttributes;
-                }
+    return attributesArr.reduce((allAttributes, attr) => {
+        const key = Object.keys(attr)[0];
+        const val = attr[key];
+
+        if (typeof filter === DATA_TYPES.FUNCTION) {
+            const shouldFilterOut = filter(key, val);
+            if (shouldFilterOut) {
+                return allAttributes;
             }
+        }
 
-            const replacedVal = replacements ? mapStr(val, replacements) : val;
-            const valStr = replacedVal === true ? '' : `="${replacedVal}"`;
-            allAttributes.push(`${key}${valStr}`);
-            return allAttributes;
-        }, []);
-    } else {
-        const entries = Object.entries(attributes);
-        keyVals = entries.reduce((allAttributes, [key, val]) => {
-            // Simple object - keyval pairs.
-
-            if (typeof filter === DATA_TYPES.FUNCTION) {
-                const shouldFilterOut = filter(key, val);
-                if (shouldFilterOut) {
-                    return allAttributes;
-                }
-            }
-
-            // For boolean true, simply output the key.
-            const replacedVal = replacements ? mapStr(attributes[key], replacements) : attributes[key];
-            const valStr = attributes[key] === true ? '' : `="${replacedVal}"`;
-
-            allAttributes.push(`${key}${valStr}`);
-            return allAttributes;
-        }, []);
-    }
-
-    return keyVals;
+        const replacedVal = replacements ? mapStr(val, replacements) : val;
+        const valStr = !outputExplicitTrue && replacedVal === true ? '' : `="${replacedVal}"`;
+        allAttributes.push(`${key}${valStr}`);
+        return allAttributes;
+    }, []);
 };
 
 /**
@@ -106,8 +103,8 @@ const getAttributeKeyVals = (attributes = {}, replacements, filter) => {
  * formatAttributes({ a: 1, b: 2 })
  * // -> 'a="1" b="2"'
  */
-const formatAttributes = (attributes = {}, replacements, filter) => {
-    const keyVals = getAttributeKeyVals(attributes, replacements, filter);
+const formatAttributes = (attributes = {}, replacements, filter, outputExplicitTrue) => {
+    const keyVals = getAttributeKeyVals(attributes, replacements, filter, outputExplicitTrue);
     if (keyVals.length === 0) return '';
 
     const keysValsJoined = keyVals.join(' ');
@@ -115,7 +112,7 @@ const formatAttributes = (attributes = {}, replacements, filter) => {
 };
 
 /**
- * Converts an object to a jstoxml array.
+ * Converts an object into an array of jstoxml-object.
  * @example
  * objToArray({ foo: 'bar', baz: 2 });
  * ->
@@ -144,21 +141,10 @@ const objToArray = (obj = {}) =>
  * isPrimitive(4);
  * // -> true
  */
-const PRIMITIVE_TYPES = [DATA_TYPES.STRING, DATA_TYPES.NUMBER, DATA_TYPES.BOOLEAN];
 const isPrimitive = (val) => PRIMITIVE_TYPES.includes(getType(val));
 
 /**
- * Determines if a value is a simple primitive type that can fit onto one line.  Needed for
- * determining any needed indenting and line breaks.
- * @example
- * isSimpleType(new Date());
- * // -> true
- */
-const SIMPLE_TYPES = [...PRIMITIVE_TYPES, DATA_TYPES.DATE, DATA_TYPES.JSTOXML_OBJECT];
-const isSimpleType = (val) => SIMPLE_TYPES.includes(getType(val));
-
-/**
- * Determines if an XML string is a simple primitive, or contains nested data.
+ * Determines if an XML string is simple (doesn't contain nested XML data).
  * @example
  * isSimpleXML('<foo />');
  * // -> false
@@ -168,7 +154,6 @@ const isSimpleXML = (xmlStr) => !xmlStr.match('<');
 /**
  * Assembles an XML header as defined by the config.
  */
-const DEFAULT_XML_HEADER = '<?xml version="1.0" encoding="UTF-8"?>';
 const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
     const shouldOutputHeader = header && isOutputStart;
     if (!shouldOutputHeader) return '';
@@ -186,7 +171,8 @@ const getHeaderString = ({ header, indent, isOutputStart /*, depth */ }) => {
 const defaultEntityReplacements = {
     '<': '&lt;',
     '>': '&gt;',
-    '&': '&amp;'
+    '&': '&amp;',
+    '"': '&quot;'
 };
 export const toXML = (obj = {}, config = {}) => {
     const {
@@ -199,8 +185,8 @@ export const toXML = (obj = {}, config = {}) => {
         header,
         attributeReplacements: rawAttributeReplacements = {},
         attributeFilter,
-        contentReplacements: rawContentReplacements = {},
-        contentFilter
+        attributeExplicitTrue = false,
+        contentReplacements: rawContentReplacements = {}
     } = config;
 
     const shouldTurnOffAttributeReplacements =
@@ -209,7 +195,6 @@ export const toXML = (obj = {}, config = {}) => {
         ? {}
         : {
               ...defaultEntityReplacements,
-              ...{ '"': '&quot;' },
               ...rawAttributeReplacements
           };
 
@@ -218,7 +203,7 @@ export const toXML = (obj = {}, config = {}) => {
         ? {}
         : { ...defaultEntityReplacements, ...rawContentReplacements };
 
-    // Determine indent string based on depth.
+    // Determines indent based on depth.
     const indentStr = getIndentStr(indent, depth);
 
     // For branching based on value type.
@@ -267,6 +252,7 @@ export const toXML = (obj = {}, config = {}) => {
             const newVal = toXML(_content, { ...config, depth: depth + 1, _isOutputStart: isOutputStart });
             const newValType = getType(newVal);
             const isNewValSimple = isSimpleXML(newVal);
+            const isNewValCDATA = isCDATA(newVal);
 
             // Pre-tag output (indent and line breaks).
             const preIndentStr = indent && !isOutputStart ? '\n' : '';
@@ -283,11 +269,16 @@ export const toXML = (obj = {}, config = {}) => {
             const shouldSelfClose =
                 typeof obj._selfCloseTag === DATA_TYPES.BOOLEAN ? valIsEmpty && obj._selfCloseTag : valIsEmpty;
             const selfCloseStr = shouldSelfClose ? '/' : '';
-            const attributesString = formatAttributes(obj._attrs, attributeReplacements, attributeFilter);
+            const attributesString = formatAttributes(
+                obj._attrs,
+                attributeReplacements,
+                attributeFilter,
+                attributeExplicitTrue
+            );
             const tag = `<${_name}${attributesString}${selfCloseStr}>`;
 
             // Post-tag output (closing tag, indent, line breaks).
-            const preTagCloseStr = indent && !isNewValSimple ? `\n${indentStr}` : '';
+            const preTagCloseStr = indent && !isNewValSimple && !isNewValCDATA ? `\n${indentStr}` : '';
             const postTag = !shouldSelfClose ? `${newVal}${preTagCloseStr}</${_name}>` : '';
             outputStr += `${preTag}${tag}${postTag}`;
             break;
@@ -371,7 +362,7 @@ export const toXML = (obj = {}, config = {}) => {
             break;
         }
 
-        // number, string, boolean, date, null, etc
+        // fallthrough types (number, string, boolean, date, null, etc)
         default: {
             outputStr = mapStr(obj, contentReplacements);
             break;

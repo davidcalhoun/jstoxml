@@ -1309,7 +1309,7 @@ describe('toXML', () => {
         assert.equal(result, expectedResult);
     });
 
-    it('ignores null attributes', () => {
+    it('ignores null attributes (issues #10 and #58)', () => {
         const val = {
             _name: 'foo',
             _attrs: {
@@ -1321,6 +1321,56 @@ describe('toXML', () => {
         const config = { attributeFilter: (key, val) => val === null };
         const result = toXML(val, config);
         const expectedResult = `<foo attr1="v1">bar</foo>`;
+        assert.equal(result, expectedResult);
+    });
+
+    it('explicitly set attribute to true (issue #57)', () => {
+        const val = {
+            _name: 'foo',
+            _attrs: {
+                attr1: 'v1',
+                attr2: true,
+                attr3: false
+            },
+            _content: 'bar'
+        };
+        const config = { attributeExplicitTrue: true };
+        const result = toXML(val, config);
+        const expectedResult = `<foo attr1="v1" attr2="true" attr3="false">bar</foo>`;
+        assert.equal(result, expectedResult);
+    });
+
+    it('CDATA is preserved', () => {
+        const val = {
+            foo: `<![CDATA[
+<B>Bold the letters in the content <EM>Next</EM>part.</B>
+]]>`
+        };
+        const config = { indent: '    ' };
+        const result = toXML(val, config);
+        const expectedResult = `<foo><![CDATA[
+<B>Bold the letters in the content <EM>Next</EM>part.</B>
+]]></foo>`;
+        assert.equal(result, expectedResult);
+    });
+
+    it('skip indent for CDATA (issue #56)', () => {
+        const val = {
+            foo: {
+                bar: `<![CDATA[
+<B>Bold the letters in the content <EM>Next</EM>part.</B>
+]]>`,
+                baz: 's'
+            }
+        };
+        const config = { indent: '    ' };
+        const result = toXML(val, config);
+        const expectedResult = `<foo>
+    <bar><![CDATA[
+<B>Bold the letters in the content <EM>Next</EM>part.</B>
+]]></bar>
+    <baz>s</baz>
+</foo>`;
         assert.equal(result, expectedResult);
     });
 });
