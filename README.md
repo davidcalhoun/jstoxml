@@ -38,16 +38,22 @@ Output:
 
 ### Configuration object options (passed as second parameter to `toXML()`)
 
-| Key name              | Type              | Default                                                      | Description                                                                                                                                                                             |
-| --------------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| indent                | string            |                                                              | Indent string, repeated n times (where n=tree depth).                                                                                                                                   |
-| header                | string or boolean |                                                              | Outputs a simple XML 1.0 UTF-8 header when true. Can also be set to a custom string.                                                                                                    |
-| attributeReplacements | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML attribute value substrings to replace (e.g. `<a attributeKey="attributeValue" />`). Does not double encode HTML entities (e.g. `&lt;` is preserved and NOT converted to `&amp;lt`). |
-| attributeFilter       | function          |                                                              | Filters out attributes based on user-supplied function.                                                                                                                                 |
-| attributeExplicitTrue | boolean           | `false`                                                      | When true explicitly outputs `true` attribute value strings, e.g. `<a foo='true' />` instead of `<a foo />`.                                                                            |
-| contentReplacements   | object            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML content strings to replace (e.g. `<a>XML content here</a>`).                                                                                                                        |
+| Key name              | Type                | Default                                                      | Description                                                                                                                                                                             |
+| --------------------- | ------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| indent                | `string`            |                                                              | Indent string, repeated n times (where n=tree depth).                                                                                                                                   |
+| header                | `string`, `boolean` |                                                              | Outputs a simple XML 1.0 UTF-8 header when true. Can also be set to a custom string.                                                                                                    |
+| attributeReplacements | `object`            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML attribute value substrings to replace (e.g. `<a attributeKey="attributeValue" />`). Does not double encode HTML entities (e.g. `&lt;` is preserved and NOT converted to `&amp;lt`). |
+| attributeFilter       | `function`          |                                                              | Filters out attributes based on user-supplied function.                                                                                                                                 |
+| attributeExplicitTrue | `boolean`           | `false`                                                      | When true explicitly outputs `true` attribute value strings, e.g. `<a foo='true' />` instead of `<a foo />`.                                                                            |
+| contentMap            | `function`          |                                                              | Custom map function to transform XML content. Runs after `contentReplacements`.                                                                                                         |
+| contentReplacements   | `object`            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML content strings to replace (e.g. `<a>XML content here</a>`).                                                                                                                        |
 
 ### Changelog
+
+#### Version 3.1.0
+
+-   config option `contentMap` can now be passed to transform any XML content. For instance, if you want `<a>null</a>` to instead appear as `<a></a>` you pass in `contentMap: (content) => { return content === null ? '' : content }`
+-   fixed an issue with improper line breaks and indenting with null content
 
 #### Version 3.0.0
 
