@@ -1373,4 +1373,86 @@ describe('toXML', () => {
 </foo>`;
         assert.equal(result, expectedResult);
     });
+
+    it('null value outputs plain content with line breaks and indenting', () => {
+        const val = {
+            a: {
+                foo: 'bar'
+            },
+            b: null,
+            c: true
+        };
+        const config = {
+            indent: '    ',
+            contentReplacements: {}
+        };
+        const result = toXML(val, config);
+        const expectedResult = `<a>
+    <foo>bar</foo>
+</a>
+b
+<c>true</c>`;
+        assert.equal(result, expectedResult);
+    });
+
+    it('null value outputs plain content with line breaks and indenting 2', () => {
+        const val = {
+            baz: {
+                a: {
+                    foo: 'bar'
+                },
+                b: null,
+                c: true
+            }
+        };
+        const config = {
+            indent: '    ',
+            contentReplacements: {}
+        };
+        const result = toXML(val, config);
+        const expectedResult = `<baz>
+    <a>
+        <foo>bar</foo>
+    </a>
+    b
+    <c>true</c>
+</baz>`;
+        assert.equal(result, expectedResult);
+    });
+
+    it('contentMap filters out null', () => {
+        const val = [
+            {
+                _name: 'a',
+                _content: { foo: 'bar' }
+            },
+            {
+                _name: 'b',
+                _content: null,
+                _selfCloseTag: false
+            },
+            {
+                _name: 'c',
+                _content: true
+            }
+        ];
+
+        const config = {
+            indent: '    ',
+            contentMap: (content) => {
+                if (content === null) {
+                    return '';
+                } else {
+                    return content;
+                }
+            }
+        };
+        const result = toXML(val, config);
+        const expectedResult = `<a>
+    <foo>bar</foo>
+</a>
+<b></b>
+<c>true</c>`;
+        assert.equal(result, expectedResult);
+    });
 });

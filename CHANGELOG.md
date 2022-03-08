@@ -1,5 +1,10 @@
 # Changelog
 
+#### Version 3.1.0
+
+-   config option `contentMap` can now be passed to transform any XML content. For instance, if you want `<a>null</a>` to instead appear as `<a></a>` you pass in `contentMap: (content) => { return content === null ? '' : content }`
+-   fixed an issue with improper line breaks and indenting with null content
+
 #### Version 3.0.0
 
 -   **BREAKING CHANGE**: config option `attributesFilter` has been renamed `attributeReplacements`

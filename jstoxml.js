@@ -47,18 +47,18 @@ const isCDATA = (str) => str.startsWith('<![CDATA[');
  * mapStr('foo&bar', { '&': '&amp;' });
  * // -> 'foo&amp;bar'
  */
-const mapStr = (input = '', replacements = {}) => {
+const mapStr = (input = '', replacements = {}, contentMap) => {
+    let output = input;
     if (typeof input === DATA_TYPES.STRING) {
         if (isCDATA(input)) {
             return input;
         }
 
         const regexp = new RegExp(`(${Object.keys(replacements).join('|')})(?!(\\w|#)*;)`, 'g');
-        return String(input).replace(regexp, (str, entity) => replacements[entity] || '');
+        output = String(input).replace(regexp, (str, entity) => replacements[entity] || '');
     }
 
-    // Passthrough/no-op
-    return input;
+    return typeof contentMap === 'function' ? contentMap(output) : output;
 };
 
 /**
@@ -184,7 +184,8 @@ export const toXML = (obj = {}, config = {}) => {
         attributeReplacements: rawAttributeReplacements = {},
         attributeFilter,
         attributeExplicitTrue = false,
-        contentReplacements: rawContentReplacements = {}
+        contentReplacements: rawContentReplacements = {},
+        contentMap
     } = config;
 
     const shouldTurnOffAttributeReplacements =
@@ -211,6 +212,8 @@ export const toXML = (obj = {}, config = {}) => {
 
     const isOutputStart = _isOutputStart && !headerStr && _isFirstItem && depth === 0;
 
+    const preIndentStr = indent && !isOutputStart ? '\n' : '';
+
     let outputStr = '';
     switch (valType) {
         case DATA_TYPES.JSTOXML_OBJECT: {
@@ -219,8 +222,8 @@ export const toXML = (obj = {}, config = {}) => {
             const { _name, _content } = obj;
 
             // Output text content without a tag wrapper.
-            if (_content === null) {
-                outputStr = _name;
+            if (_content === null && typeof contentMap !== 'function') {
+                outputStr = `${preIndentStr}${indentStr}${_name}`;
                 break;
             }
 
@@ -244,7 +247,7 @@ export const toXML = (obj = {}, config = {}) => {
             }
 
             // Don't output private vars (such as _attrs).
-            if (_name.includes(PRIVATE_VARS)) break;
+            if (PRIVATE_VARS.includes(_name)) break;
 
             // Process the nested new value and create new config.
             const newVal = toXML(_content, { ...config, depth: depth + 1, _isOutputStart: isOutputStart });
@@ -253,7 +256,6 @@ export const toXML = (obj = {}, config = {}) => {
             const isNewValCDATA = isCDATA(newVal);
 
             // Pre-tag output (indent and line breaks).
-            const preIndentStr = indent && !isOutputStart ? '\n' : '';
             const preTag = `${preIndentStr}${indentStr}`;
 
             // Special handling for comments, preserving preceding line breaks/indents.
@@ -362,7 +364,7 @@ export const toXML = (obj = {}, config = {}) => {
 
         // fallthrough types (number, string, boolean, date, null, etc)
         default: {
-            outputStr = mapStr(obj, contentReplacements);
+            outputStr = mapStr(obj, contentReplacements, contentMap);
             break;
         }
     }
