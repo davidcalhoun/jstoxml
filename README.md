@@ -46,9 +46,14 @@ Output:
 | attributeFilter       | `function`          |                                                              | Filters out attributes based on user-supplied function.                                                                                                                                 |
 | attributeExplicitTrue | `boolean`           | `false`                                                      | When true explicitly outputs `true` attribute value strings, e.g. `<a foo='true' />` instead of `<a foo />`.                                                                            |
 | contentMap            | `function`          |                                                              | Custom map function to transform XML content. Runs after `contentReplacements`.                                                                                                         |
-| contentReplacements   | `object`            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML content strings to replace (e.g. `<a>XML content here</a>`).                                                                                                                        |
+| contentReplacements   | `object`            | `{ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" }` | XML content strings to replace (e.g. `<a>This & that</a>` becomes `<a>This &amp; that</a>`).                                                                                            |
+| selfCloseTags         | `boolean`           | `true`                                                       | Whether tags should be self-closing.                                                                                                                                                    |
 
 ### Changelog
+
+#### Version 3.2.0
+
+-   new config option `selfCloseTags` added which is used as an easier global setting to enable/disable self-closing tags.
 
 #### Version 3.1.0
 
@@ -654,11 +659,11 @@ Output:
 
 #### Example 12: Avoiding self-closing tags
 
-If for some reason you want to avoid self-closing tags, you can pass in a special config option `_selfCloseTag`:
+If you don't want self-closing tags, you can pass in a special config option `selfCloseTags`:
 
 ```javascript
 const xmlOptions = {
-    _selfCloseTag: false
+    selfCloseTags: false
 };
 
 toXML(

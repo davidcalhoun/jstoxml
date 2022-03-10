@@ -993,6 +993,88 @@ describe('toXML', () => {
             assert.equal(result, expectedResult);
         });
 
+        it('12b avoiding self closing tags 2', () => {
+            const val = [
+                {
+                    _name: 'foo',
+                    _content: ''
+                },
+                {
+                    _name: 'bar',
+                    _content: undefined
+                }
+            ];
+            const config = {
+                selfCloseTags: false
+            };
+            const result = toXML(val, config);
+            const expectedResult = '<foo></foo><bar></bar>';
+            assert.equal(result, expectedResult);
+        });
+
+        it('12c avoiding self closing tags - local overrides', () => {
+            const val = [
+                {
+                    _name: 'foo',
+                    _content: '',
+                    _selfCloseTag: false
+                },
+                {
+                    _name: 'bar',
+                    _content: undefined,
+                    _selfCloseTag: false
+                }
+            ];
+            const config = {
+                selfCloseTags: true
+            };
+            const result = toXML(val, config);
+            const expectedResult = '<foo></foo><bar></bar>';
+            assert.equal(result, expectedResult);
+        });
+
+        it('12c avoiding self closing tags - local overrides', () => {
+            const val = [
+                {
+                    _name: 'foo',
+                    _content: '',
+                    _selfCloseTag: true
+                },
+                {
+                    _name: 'bar',
+                    _content: undefined,
+                    _selfCloseTag: true
+                }
+            ];
+            const config = {
+                selfCloseTags: false
+            };
+            const result = toXML(val, config);
+            const expectedResult = '<foo/><bar/>';
+            assert.equal(result, expectedResult);
+        });
+
+        it('12d avoiding self closing tags - issue 61', () => {
+            const val = {
+                req: {
+                    tag1: 'text1',
+                    tag2: '',
+                    tag3: 'text2',
+                    tag4: 'text3',
+                    tag5: 'text4'
+                }
+            };
+
+            const config = {
+                header: true,
+                selfCloseTags: false
+            };
+            const result = toXML(val, config);
+            const expectedResult =
+                '<?xml version="1.0" encoding="UTF-8"?><req><tag1>text1</tag1><tag2></tag2><tag3>text2</tag3><tag4>text3</tag4><tag5>text4</tag5></req>';
+            assert.equal(result, expectedResult);
+        });
+
         it('13 custom xml header', () => {
             const val = {
                 foo: 'bar'
@@ -1440,11 +1522,7 @@ b
         const config = {
             indent: '    ',
             contentMap: (content) => {
-                if (content === null) {
-                    return '';
-                } else {
-                    return content;
-                }
+                return content === null ? '' : content;
             }
         };
         const result = toXML(val, config);
