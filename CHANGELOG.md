@@ -1,5 +1,9 @@
 # Changelog
 
+#### Version 3.2.0
+
+-   new config option `selfCloseTags` added which is used as an easier global setting to enable/disable self-closing tags.
+
 #### Version 3.1.0
 
 -   config option `contentMap` can now be passed to transform any XML content. For instance, if you want `<a>null</a>` to instead appear as `<a></a>` you pass in `contentMap: (content) => { return content === null ? '' : content }`
