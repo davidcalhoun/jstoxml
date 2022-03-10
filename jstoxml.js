@@ -185,7 +185,8 @@ export const toXML = (obj = {}, config = {}) => {
         attributeFilter,
         attributeExplicitTrue = false,
         contentReplacements: rawContentReplacements = {},
-        contentMap
+        contentMap,
+        selfCloseTags = true
     } = config;
 
     const shouldTurnOffAttributeReplacements =
@@ -266,8 +267,13 @@ export const toXML = (obj = {}, config = {}) => {
 
             // Tag output.
             const valIsEmpty = newValType === 'undefined' || newVal === '';
+            const globalSelfClose = selfCloseTags;
+            const localSelfClose = obj._selfCloseTag;
             const shouldSelfClose =
-                typeof obj._selfCloseTag === DATA_TYPES.BOOLEAN ? valIsEmpty && obj._selfCloseTag : valIsEmpty;
+                typeof localSelfClose === DATA_TYPES.BOOLEAN
+                    ? valIsEmpty && localSelfClose
+                    : valIsEmpty && globalSelfClose;
+
             const selfCloseStr = shouldSelfClose ? '/' : '';
             const attributesString = formatAttributes(
                 obj._attrs,
