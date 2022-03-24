@@ -6,7 +6,7 @@ jobs:
     steps:
       # Checks out code from Github.
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       # Restore cache if available.
       - name: Restore cached dependencies
         id: dep-cache
