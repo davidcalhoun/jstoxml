@@ -10,7 +10,7 @@ jobs:
       # Restore cache if available.
       - name: Restore cached dependencies
         id: dep-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: jstoxml-cache
         with:
