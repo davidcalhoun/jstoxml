@@ -333,7 +333,7 @@ export const toXML = (obj = {}, config = {}) => {
                 // Fallthrough: just pass the key as the content for the new special-object.
                 if (typeof outputObj._content === 'undefined') outputObj._content = obj[key];
 
-                const xml = toXML(outputObj, newConfig, key);
+                const xml = toXML(outputObj, newConfig);
 
                 return xml;
             }, config);
