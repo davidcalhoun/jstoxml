@@ -203,6 +203,8 @@ export const toXML = (obj = {}, config = {}) => {
         ? {}
         : { ...defaultEntityReplacements, ...rawContentReplacements };
 
+    const shouldAddNewlines = typeof indent === 'string';
+
     // Determines indent based on depth.
     const indentStr = getIndentStr(indent, depth);
 
@@ -213,7 +215,7 @@ export const toXML = (obj = {}, config = {}) => {
 
     const isOutputStart = _isOutputStart && !headerStr && _isFirstItem && depth === 0;
 
-    const preIndentStr = indent && !isOutputStart ? '\n' : '';
+    const preIndentStr = shouldAddNewlines && !isOutputStart ? '\n' : '';
 
     let outputStr = '';
     switch (valType) {
@@ -284,7 +286,7 @@ export const toXML = (obj = {}, config = {}) => {
             const tag = `<${_name}${attributesString}${selfCloseStr}>`;
 
             // Post-tag output (closing tag, indent, line breaks).
-            const preTagCloseStr = indent && !isNewValSimple && !isNewValCDATA ? `\n${indentStr}` : '';
+            const preTagCloseStr = shouldAddNewlines && !isNewValSimple && !isNewValCDATA ? `\n${indentStr}` : '';
             const postTag = !shouldSelfClose ? `${newVal}${preTagCloseStr}</${_name}>` : '';
             outputStr += `${preTag}${tag}${postTag}`;
             break;

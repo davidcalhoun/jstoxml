@@ -260,6 +260,22 @@ describe('toXML', () => {
             assert.equal(result, expectedResult);
         });
 
+        it('nesting with empty indent', () => {
+            const val = {
+                foo: {
+                    foo: 'bar',
+                    foo2: 'bar2'
+                }
+            };
+            const config = { indent: '' };
+            const result = toXML(val, config);
+            const expectedResult = `<foo>
+<foo>bar</foo>
+<foo2>bar2</foo2>
+</foo>`;
+            assert.equal(result, expectedResult);
+        });
+
         it('deep nesting', () => {
             const val = {
                 a: {
