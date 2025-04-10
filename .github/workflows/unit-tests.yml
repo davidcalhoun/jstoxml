@@ -6,6 +6,8 @@ jobs:
     build-and-test:
         runs-on: ubuntu-latest
         steps:
+            - name: Log versions
+              run: echo "Using Node $(node --version), npm $(npm --version)"
             # Checks out code from Github.
             - name: Checkout repo
               uses: actions/checkout@v3
