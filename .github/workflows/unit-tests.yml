@@ -8,14 +8,14 @@ jobs:
     build-and-test:
         runs-on: ubuntu-latest
         steps:
-            - name: Log versions
-              run: echo "Using Node $(node --version), npm $(npm --version)"
             # Checks out code from Github.
             - name: Checkout repo
               uses: actions/checkout@v3
             - uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
+            - name: Log versions
+              run: echo "Using Node $(node --version), npm $(npm --version)"
             # Restore cache if available.
             - name: Restore cached dependencies
               id: dep-cache
