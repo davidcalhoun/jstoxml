@@ -2,6 +2,8 @@ name: unit testing
 on:
     push:
     pull_request:
+env:
+    NODE_VERSION: 22
 jobs:
     build-and-test:
         runs-on: ubuntu-latest
@@ -9,6 +11,11 @@ jobs:
             # Checks out code from Github.
             - name: Checkout repo
               uses: actions/checkout@v3
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+            - name: Log versions
+              run: echo "Using Node $(node --version), npm $(npm --version)"
             # Restore cache if available.
             - name: Restore cached dependencies
               id: dep-cache
@@ -17,7 +24,7 @@ jobs:
                   cache-name: jstoxml-cache
               with:
                   path: node_modules
-                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  key: ${{ env.NODE_VERSION }}${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-build-${{ env.cache-name }}-
                       ${{ runner.os }}-build-
