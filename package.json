@@ -1,6 +1,6 @@
 {
     "name": "jstoxml",
-    "version": "6.0.1",
+    "version": "7.0.0",
     "description": "Converts JavaScript/JSON to XML (for RSS, Podcasts, AMP, etc.)",
     "homepage": "http://github.com/davidcalhoun/jstoxml",
     "keywords": [
@@ -13,30 +13,28 @@
         "site map",
         "xml"
     ],
-    "main": "dist/jstoxml.js",
+    "main": "jstoxml.js",
+    "type": "module",
     "author": "David Calhoun <david.b.calhoun@gmail.com>",
     "license": "MIT",
     "repository": "git://github.com/davidcalhoun/jstoxml",
     "scripts": {
-        "dist": "./dist.sh",
-        "prepare": "./dist.sh",
-        "test": "rm -rf dist && ./dist.sh && mocha test.js",
-        "patch": "npm version patch && npm run npm-publish",
-        "minor": "npm version minor && npm run npm-publish",
+        "bump": "npm outdated & npm update && npm audit fix && npm test",
+        "lint": "eslint jstoxml.js",
         "major": "npm version major && npm run npm-publish",
+        "minor": "npm version minor && npm run npm-publish",
         "npm-publish": "npm publish && git push && git push --tags",
-        "bump": "npm outdated & npm update && npm audit fix && npm test"
+        "patch": "npm version patch && npm run npm-publish",
+        "test": "mocha"
     },
-    "unpkg": "dist/jstoxml-min.js",
     "devDependencies": {
-        "@babel/cli": "^7.16.0",
         "@babel/core": "^7.16.5",
         "@babel/eslint-parser": "^7.17.0",
-        "@babel/plugin-transform-modules-umd": "^7.16.5",
-        "@babel/preset-env": "^7.16.5",
+        "@eslint/eslintrc": "^3.3.1",
+        "@eslint/js": "^9.24.0",
         "eslint": "^9.24.0",
+        "globals": "^16.0.0",
         "mocha": "^11.1.0",
-        "prettier": "^3.2.4",
-        "uglify-js": "^3.15.2"
+        "prettier": "^3.2.4"
     }
 }

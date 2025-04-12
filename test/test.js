@@ -1,5 +1,5 @@
-const { toXML } = require('./dist/jstoxml');
-const assert = require('assert');
+import { toXML } from '../jstoxml.js';
+import assert from 'assert';
 
 describe('toXML', () => {
     describe('primitives', () => {
