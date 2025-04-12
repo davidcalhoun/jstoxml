@@ -10,7 +10,7 @@ This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml),
 
 ### Requirements
 
-Node 16 or a code bundler that understands ES Modules.
+Node 16+ or a code bundler that understands ES Modules.
 
 ### Installation
 
