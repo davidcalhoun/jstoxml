@@ -1,7 +1,33 @@
 import { toXML } from '../jstoxml.js';
 import assert from 'assert';
 
+jest.spyOn(console, 'warn');
+
 describe('toXML', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+    describe('foo', () => {
+        const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const val = {
+            _name: 'foo',
+            _content: 'bar',
+            _attrs: {
+                a: 'b',
+                c: 'd'
+            },
+            someUnexpectedSibling: 'foo',
+            anotherUnexpectedSibling: 'bar'
+        };
+
+        toXML(val);
+
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+            'Unexpected sibling someUnexpectedSibling, anotherUnexpectedSibling.  When using _content, the only siblings recognized are _name and _attrs.'
+        );
+    });
+
     describe('primitives', () => {
         const vals = ['foo', false, true, 4, 4.56];
 
