@@ -8,7 +8,7 @@ describe('toXML', () => {
         jest.clearAllMocks();
     });
     describe('foo', () => {
-        const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const consoleWarnSpy = jest.spyOn(console, 'warn');
 
         const val = {
             _name: 'foo',
