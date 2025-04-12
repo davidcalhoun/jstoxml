@@ -222,11 +222,11 @@ export const toXML = (obj = {}, config = {}) => {
         case DATA_TYPES.JSTOXML_OBJECT: {
             // Processes a specially-formatted object used by jstoxml.
 
-            const { _name, _content, _attrs, ...others } = obj;
+            const { _name, _content, _attrs, ...invalidSiblings } = obj;
 
-            if (Object.keys(others).length > 0) {
+            if (Object.keys(invalidSiblings).length > 0) {
                 console.warn(
-                    `Unexpected sibling ${Object.keys(others).join(', ')}.  When using _content, the only siblings recognized are _name and _attrs.`
+                    `Unexpected sibling ${Object.keys(invalidSiblings).join(', ')}.  When using _content, the only siblings recognized are _name and _attrs.`
                 );
             }
 
