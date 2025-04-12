@@ -8,6 +8,10 @@ Everyone loves JSON, and more and more folks want to move that direction, but we
 
 This is inspired by [node-jsontoxml](https://github.com/soldair/node-jsontoxml), which was found to be a bit too rough around the edges. jstoxml attempts to fix that by being more flexible.
 
+### Requirements
+
+Node 16 or a code bundler that understands ES Modules.
+
 ### Installation
 
 - npm install jstoxml
