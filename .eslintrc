@@ -6,6 +6,6 @@
     "env": {
         "browser": true,
         "node": true,
-        "mocha": true
+        "test": true
     }
 }
