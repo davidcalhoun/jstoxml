@@ -186,7 +186,8 @@ export const toXML = (obj = {}, config = {}) => {
         attributeExplicitTrue = false,
         contentReplacements: rawContentReplacements = {},
         contentMap,
-        selfCloseTags = true
+        selfCloseTags = true,
+        ignoreTagsWithNoContent = false
     } = config;
 
     const shouldTurnOffAttributeReplacements =
@@ -288,7 +289,11 @@ export const toXML = (obj = {}, config = {}) => {
             // Post-tag output (closing tag, indent, line breaks).
             const preTagCloseStr = shouldAddNewlines && !isNewValSimple && !isNewValCDATA ? `\n${indentStr}` : '';
             const postTag = !shouldSelfClose ? `${newVal}${preTagCloseStr}</${_name}>` : '';
-            outputStr += `${preTag}${tag}${postTag}`;
+            if (ignoreTagsWithNoContent) {
+                outputStr += newVal ? `${preTag}${tag}${postTag}`: '';
+            } else {
+                outputStr += `${preTag}${tag}${postTag}`; 
+            }
             break;
         }
 
