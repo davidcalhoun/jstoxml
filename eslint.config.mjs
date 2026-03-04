@@ -23,7 +23,7 @@ export default defineConfig([
             globals: {
                 ...globals.browser,
                 ...globals.node,
-                ...globals.mocha
+                ...globals.jest
             },
 
             parser: babelParser,
